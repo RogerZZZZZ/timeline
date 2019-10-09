@@ -1,10 +1,10 @@
 {
-  "name": "timline",
+  "name": "timeline",
   "version": "1.0.0",
   "description": "",
   "author": "",
   "license": "MIT",
-  "repository": "/timline",
+  "repository": "/timeline",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "jsnext:main": "dist/index.es.js",
