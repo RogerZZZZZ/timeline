@@ -5,6 +5,18 @@ import ScrollBar from './paint/scrollbar'
 import Settings from './default'
 import { findTimeInLayer } from './lib/utils'
 
+class LayerProp {
+  private name: string
+  private values: any = []
+  private _value = 0
+  private _color: string
+
+  constructor(name: string) {
+    this.name = name
+    this._color = `#${(Math.random() * 0xffffff | 0 ).toString(16)}`
+  }
+}
+
 export default class TimeLine {
   private data: DataStore
   private dispatcher: Dispatcher
@@ -178,6 +190,12 @@ export default class TimeLine {
       }
     }
 
+  }
+
+  public addLayer(name: string) {
+    const layer = new LayerProp(name)
+    this.layers.push(layer)
+    
   }
 }
 
