@@ -73,3 +73,21 @@ export const formatTimeRuler = (s: number, type?: string) => {
 	}
 	return str
 }
+
+export const findTimeInLayer = (layer: any, time: number) => {
+  const values = layer.values
+  let i = 0
+  for (; i < values.length; i++) {
+    const value = values[i]
+    if (value.time === time) {
+      return {
+        index: i,
+        object: value,
+      }
+    } else if (value.time > time) {
+      return i
+    }
+  }
+
+  return i
+}
