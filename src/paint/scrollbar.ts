@@ -1,5 +1,5 @@
-import Dispatcher from '../lib/dispatcher'
 import { style } from '../lib/utils'
+import SimpleEvents from '../lib/SimpleEvents'
 
 const scrolltrack_style = {
 	position: 'absolute',
@@ -20,13 +20,11 @@ const scrollbar_style = {
 export default class ScrollBar {
   private w: number
   private h: number
-  private dispatcher: Dispatcher
   private scrollTrack: HTMLDivElement
   private scrollBar: HTMLDivElement
   private barLength: number
   private barY: number
   private scrollTrackHeight: number
-  private scrollDispatcher: Dispatcher
   private mouseDownGrip: number
 
   private SCROLLBAR_WIDTH: number = 12
@@ -34,10 +32,11 @@ export default class ScrollBar {
   private SCROLL_WIDTH: number
   private MIN_BAR_LENGTH: number = 25
 
-  constructor(w: number, h: number, dispatcher: Dispatcher) {
+  public onScrollEvents: SimpleEvents
+
+  constructor(w: number, h: number) {
     this.w = w
     this.h = h
-    this.dispatcher = dispatcher
 
     this.SCROLLBAR_WIDTH = w ? w : 12
     this.SCROLL_WIDTH = this.SCROLLBAR_WIDTH + this.SCROLLBAR_MARGIN * 2
@@ -57,10 +56,10 @@ export default class ScrollBar {
 
     this.scrollTrack.appendChild(this.scrollBar)
 
+    this.onScrollEvents = new SimpleEvents(null)
+
     this.setLength(1)
     this.setPosition(0)
-
-    this.scrollDispatcher = new Dispatcher()
 
     this.scrollTrack.addEventListener('mousedown', this.onDown, false)
   }
@@ -74,9 +73,10 @@ export default class ScrollBar {
       document.addEventListener('mouseup', this.onUp, false)
     } else {
       if (event.clientY < this.barY) {
-        this.scrollDispatcher.fire('pageup')
+        this.onScrollEvents.fire('pageup')
+
       } else if (event.clientY > (this.barY + this.barLength)) {
-        this.scrollDispatcher.fire('pagedown')
+        this.onScrollEvents.fire('pagedown')
       }
     }
   }
@@ -107,7 +107,7 @@ export default class ScrollBar {
     const scrollTo = (event.clientY - this.mouseDownGrip) / emptyTrack > 1 ? 1 : 0
 
     this.setPosition(scrollTo)
-    this.scrollDispatcher.fire('scrollto', scrollTo)
+    this.onScrollEvents.fire('scrollto', scrollTo)
   }
 
   private onUp(event: any) {

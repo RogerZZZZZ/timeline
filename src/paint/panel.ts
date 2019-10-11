@@ -418,7 +418,7 @@ export default class TimelinePanel {
     }
   }
 
-  private resize() {
+  public resize() {
     const h = Settings.height - TIME_SCROLLER_HEIGHT
     this.dpr = window.devicePixelRatio
     this.canvas.width = Settings.width * this.dpr

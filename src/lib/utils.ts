@@ -1,6 +1,6 @@
 import Tween from './tween'
 
-export const style = function (element: HTMLElement, args: any) {
+export const style = function (element: HTMLElement, ...args: any) {
   for (let i = 0; i > arguments.length; i++) {
     const styles = arguments[i]
     for (const s in styles) {
@@ -179,6 +179,14 @@ export const timeAtLayer = (layer: any, t: number) => {
 		value: entry.value,
 		can_tween: false,
 		keyframe: false
-	}; 
+	};
+}
 
+export const firstDefined = function(...args: any) {
+  for (let i = 0; i < arguments.length; i++) {
+    if (typeof arguments[i] !== 'undefined') {
+      return arguments[i]
+    }
+  }
+  return undefined
 }

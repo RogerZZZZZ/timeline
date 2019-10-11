@@ -41,7 +41,7 @@ class ToggleButton {
 
 
 export default class LayerView {
-  private dom: HTMLDivElement
+  public dom: HTMLDivElement
   private label: HTMLSpanElement
   private keyframeButton: HTMLButtonElement
   private dispatcher: Dispatcher
@@ -61,11 +61,11 @@ export default class LayerView {
     this.keyframeButton = document.createElement('button')
     this.keyframeButton.innerHTML = '&#9672;'; // '&diams;' &#9671; 9679 9670 9672
     this.keyframeButton.style.cssText = 'background: none; font-size: 12px; padding: 0px; font-family: monospace; float: right; width: 20px; height: ' + height + 'px; border-style:none; outline: none;'; //  border-style:inset;
-    
+
     this.keyframeButton.addEventListener('click', (e) => {
       dispatcher.fire('keyframe', layer, this.state.get('_value').value);
     });
-    
+
     const soloToggle = new ToggleButton('S')
     this.dom.appendChild(soloToggle.dom)
 
@@ -79,7 +79,7 @@ export default class LayerView {
     muteToggle.onClick = () => {
       dispatcher.fire('action:mute', layer, muteToggle.pressed)
     }
-    
+
     this.dom.appendChild(this.label)
     this.dom.appendChild(this.keyframeButton)
 
