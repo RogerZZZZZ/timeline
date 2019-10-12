@@ -1,5 +1,5 @@
 export default class Dispatcher {
-  private eventListener: any
+  private eventListener: any = {}
 
   public on(type: string, listener: Function) {
     if (!(type in this.eventListener)) {
@@ -9,14 +9,12 @@ export default class Dispatcher {
     this.eventListener[type].push(listener)
   }
 
-  public fire(type: string, ...arg: any) {
-    const args = Array.prototype.slice.call(arguments)
-    args.shift()
+  public fire(type: string, ...arg: any[]) {
     const listeners = this.eventListener[type]
     if (!listeners) return
 
     for (let i = 0; i < listeners.length; i++) {
-      listeners[i].apply(listeners[i], args)
+      listeners[i].apply(listeners[i], arg)
     }
   }
 }

@@ -1,7 +1,6 @@
 import Theme from '../theme'
 import DataStore from '../lib/data-store'
 import Dispatcher from '../lib/dispatcher'
-import { ICanvas } from '../IInterface'
 
 class Rect {
   private x: number

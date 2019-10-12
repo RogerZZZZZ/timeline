@@ -1,3 +1,4 @@
+import { ILayer } from '../IInterface'
 import Dispatcher from '../lib/dispatcher'
 import Theme from '../theme'
 import Settings from '../default'
@@ -12,7 +13,7 @@ class ToggleButton {
   constructor(text: string) {
     this.text = text
     this.button = document.createElement('button')
-    this.button.textContent = text
+    this.button.textContent = this.text
 
     style(this.button, {
       fontSize: '12px',
@@ -45,10 +46,10 @@ export default class LayerView {
   private label: HTMLSpanElement
   private keyframeButton: HTMLButtonElement
   private dispatcher: Dispatcher
-  private layer: any
+  private layer: ILayer
   private state: any
 
-  constructor(layer: any, dispatcher: Dispatcher) {
+  constructor(layer: ILayer, dispatcher: Dispatcher) {
     this.dispatcher = dispatcher
     this.layer = layer
 
@@ -62,7 +63,7 @@ export default class LayerView {
     this.keyframeButton.innerHTML = '&#9672;'; // '&diams;' &#9671; 9679 9670 9672
     this.keyframeButton.style.cssText = 'background: none; font-size: 12px; padding: 0px; font-family: monospace; float: right; width: 20px; height: ' + height + 'px; border-style:none; outline: none;'; //  border-style:inset;
 
-    this.keyframeButton.addEventListener('click', (e) => {
+    this.keyframeButton.addEventListener('click', () => {
       dispatcher.fire('keyframe', layer, this.state.get('_value').value);
     });
 

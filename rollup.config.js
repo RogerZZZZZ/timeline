@@ -6,6 +6,7 @@ import postcss from 'rollup-plugin-postcss'
 import resolve from 'rollup-plugin-node-resolve'
 import url from 'rollup-plugin-url'
 import svgr from '@svgr/rollup'
+import copy from 'rollup-plugin-copy'
 
 import pkg from './package.json'
 
@@ -37,6 +38,12 @@ export default {
       rollupCommonJSResolveHack: true,
       clean: true
     }),
-    commonjs()
+    commonjs(),
+    copy({
+      targets: [{
+        src: 'src/font.json',
+        dest: 'dist/',
+      }]
+    })
   ]
 }

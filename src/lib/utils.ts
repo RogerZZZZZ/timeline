@@ -1,7 +1,8 @@
 import Tween from './tween'
+import { ILayer } from '../IInterface'
 
-export const style = function (element: HTMLElement, ...args: any) {
-  for (let i = 0; i > arguments.length; i++) {
+export const style = function (element: HTMLElement, ...args: any[]) {
+  for (let i = 0; i > args.length; i++) {
     const styles = arguments[i]
     for (const s in styles) {
       element.style[s] = styles[s]
@@ -11,49 +12,45 @@ export const style = function (element: HTMLElement, ...args: any) {
 
 export const proxyCtx = function(ctx?: CanvasRenderingContext2D) {
   // create a proxy 2d context wrapper to allow the fluent / chaining API
+  if (ctx) {
+    const wrapper: any = {}
 
-  const wrapper: any = {}
+    const proxyFunction = (c: any) => {
+      return function() {
+        ctx[c].apply(ctx, arguments)
+        return wrapper
+      }
+    }
 
-  const proxyFunction = (c: any) => {
-    return ctx ? function() {
-      ctx[c].apply(ctx, arguments)
+    const proxyProperty = (c: any) => {
+      return function(v: any) {
+        ctx[c] = v
+        return wrapper
+      }
+    }
+
+    wrapper.run = function(args: any) {
+      args(wrapper)
       return wrapper
     }
-    : function() {
-      return wrapper
-    }
-  }
 
-  const proxyProperty = (c: any) => {
-    return ctx ? function(v: any) {
-      ctx[c] = v
-      return wrapper
+    for (let c in ctx) {
+      const type = typeof(ctx[c])
+      switch(type) {
+        case 'object':
+          break
+        case 'function':
+          wrapper[c] = proxyFunction(c)
+          break
+        default:
+          wrapper[c] = proxyProperty(c)
+          break
+      }
     }
-    : function() {
-      return wrapper
-    }
-  }
-
-  wrapper.run = function(args: any) {
-    args(wrapper)
     return wrapper
+  } else {
+    return {}
   }
-
-  for (let c in ctx) {
-    const type = typeof(ctx[c])
-    switch(type) {
-      case 'object':
-        break
-      case 'function':
-        wrapper[c] = proxyFunction(c)
-        break
-      default:
-        wrapper[c] = proxyProperty(c)
-        break
-    }
-  }
-
-  return wrapper
 }
 
 export const formatTimeRuler = (s: number, type?: string) => {
@@ -76,7 +73,7 @@ export const formatTimeRuler = (s: number, type?: string) => {
 	return str
 }
 
-export const findTimeInLayer = (layer: any, time: number) => {
+export const findTimeInLayer = (layer: ILayer, time: number) => {
   const values = layer.values
   let i = 0
   for (; i < values.length; i++) {
@@ -94,7 +91,7 @@ export const findTimeInLayer = (layer: any, time: number) => {
   return i
 }
 
-export const timeAtLayer = (layer: any, t: number) => {
+export const timeAtLayer = (layer: ILayer, t: number) => {
 	// Find the value of layer at t seconds.
 	// this expect layer to be sorted
 	// not the most optimized for now, but would do.
@@ -182,8 +179,8 @@ export const timeAtLayer = (layer: any, t: number) => {
 	};
 }
 
-export const firstDefined = function(...args: any) {
-  for (let i = 0; i < arguments.length; i++) {
+export const firstDefined = function(...args: any[]) {
+  for (let i = 0; i < args.length; i++) {
     if (typeof arguments[i] !== 'undefined') {
       return arguments[i]
     }

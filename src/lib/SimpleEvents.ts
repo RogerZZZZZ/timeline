@@ -14,9 +14,9 @@ export default class SimpleEvents {
     this.listeners.splice(this.listeners.indexOf(event), 1)
   }
 
-  public fire(...args: any) {
+  public fire(...args: any[]) {
     for (let i = 0; i < this.listeners.length; i++) {
-      this.listeners[i].apply(this.ctx, arguments)
+      this.listeners[i].apply(this.ctx, args)
     }
   }
 }

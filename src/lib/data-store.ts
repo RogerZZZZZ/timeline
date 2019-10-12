@@ -1,3 +1,4 @@
+import { ILayer } from '../IInterface'
 import { IData, IListener } from '../IInterface'
 import Settings from '../default'
 
@@ -34,7 +35,7 @@ export default class DataStore {
       scrollTime: 0,
       timeScale: Settings.time_scale,
     },
-    layers: [],
+    layers: [] as ILayer[],
   }
   private data = Object.assign({}, this.defaultData)
 

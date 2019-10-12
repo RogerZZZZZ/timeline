@@ -1,3 +1,4 @@
+import { ILayer } from './IInterface'
 import DataStore from './lib/data-store'
 import Dispatcher from './lib/dispatcher'
 import TimelinePanel from './paint/panel'
@@ -16,23 +17,21 @@ const header_styles = {
   overflow: 'hidden'
 };
 
-const button_styles = {
-  width: '20px',
-  height: '20px',
-  padding: '2px',
-  marginRight: '2px'
-};
-
-class LayerProp {
-  private name: string
-  private values: any = []
-  private _value = 0
-  private _color: string
+export class LayerProp implements ILayer{
+  public name: string
+  public values: any = []
+  public _value = 0
+  public _color: string
+  public _mute: boolean = false
 
   constructor(name: string) {
     this.name = name
     this._color = `#${(Math.random() * 0xffffff | 0 ).toString(16)}`
   }
+}
+
+interface ITimelineConfig {
+  containerId: string
 }
 
 export default class TimeLine {
@@ -52,7 +51,12 @@ export default class TimeLine {
   private topRightBarDiv: HTMLDivElement
   private root: any
 
-  constructor() {
+  constructor(config: ITimelineConfig) {
+    const hostContainer = document.getElementById(config.containerId)
+    if (!hostContainer) {
+      console.log('containerId does not find any dom')
+      return;
+    }
     this.data = new DataStore()
     this.dispatcher = this.initDispatcher()
 
@@ -102,7 +106,6 @@ export default class TimeLine {
     this.paneDiv.appendChild(this.paneTitleDiv)
 
     this.root = document.createElement('timeliner')
-    document.body.appendChild(this.root)
     if (this.root.createShadowRoot) this.root = this.root.createShadowRoot()
 
     this.root.appendChild(this.paneDiv)
@@ -122,6 +125,8 @@ export default class TimeLine {
     })
 
     this.paint()
+
+    hostContainer.appendChild(this.root)
   }
 
   private initDispatcher() {
@@ -143,7 +148,7 @@ export default class TimeLine {
       this.repaintAll()
     })
 
-    dispatcher.on('value.change', (layer: any, value: any, dontSize: boolean) => {
+    dispatcher.on('value.change', (layer: any, value: any) => {
       if (layer._mute) return
 
       const t = this.data.get('ui:currentTime').value
@@ -187,6 +192,7 @@ export default class TimeLine {
 
     //TODO
     dispatcher.on('ease', (layer: any, ease_type: string) => {
+      console.log(layer, ease_type)
       // var t = this.data.get('ui:currentTime').value;
       // var v = utils.timeAtLayer(layer, t);
       // if (v && v.entry) {
@@ -231,6 +237,7 @@ export default class TimeLine {
 
     dispatcher.on('target.notify', (name: string, value: any) => {
       // TODO target
+      console.log(name, value)
     })
 
     dispatcher.on('update.scale', (v: any) => {
@@ -315,6 +322,7 @@ export default class TimeLine {
 
   public resize(width: number, height: number) {
     // TODO
+    console.log(width, height)
   }
 
   public setTarget(t: any) {

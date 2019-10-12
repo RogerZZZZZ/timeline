@@ -1,3 +1,4 @@
+import { ILayer } from '../IInterface'
 import Dispatcher from '../lib/dispatcher'
 import DataStore from '../lib/data-store'
 import Canvas from './canvas'
@@ -28,7 +29,7 @@ export default class TimelinePanel {
   private renderItems = [] as any[]
   private ctx: any
   private ctxProxy: any
-  private layers: any
+  private layers: ILayer[]
   private pointer: {x: number, y: number} | null
   private scrollTop = 0
   private scrollLeft = 0
@@ -429,10 +430,10 @@ export default class TimelinePanel {
     this.scrollCanvas.setSize(Settings.width, TIME_SCROLLER_HEIGHT)
   }
 
-  private setState(state: any) {
-    this.layers = state.value
-    this.repaint()
-  }
+  // private setState(state: any) {
+  //   this.layers = state.value
+  //   this.repaint()
+  // }
 
   get dom() {
     return this.containerDiv

@@ -1,6 +1,6 @@
 import Theme from '../theme'
 import { style } from '../lib/utils'
-const font = require('../font.json')
+const font = require('./font.json')
 
 const buttonStyle = {
   padding: '0.2em 0.4em',
@@ -84,6 +84,7 @@ export default class IconButton {
     })
 
     this.cavnas = document.createElement('canvas')
+    console.log('canvas', this.cavnas)
     this.ctx = this.cavnas.getContext('2d')
 
     if (this.dp) this.dp.on('resize', this.resize)
@@ -92,6 +93,7 @@ export default class IconButton {
   }
 
   public resize() {
+    console.log('resize', this.cavnas)
     this.dpr = window.devicePixelRatio
     let height = this.size
     const glyph = font.fonts[this.icon]

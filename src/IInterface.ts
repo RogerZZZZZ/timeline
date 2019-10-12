@@ -16,6 +16,14 @@ export interface IData {
   layers: any[]
 }
 
+export interface ILayer {
+  name: string
+  values: any
+  _value: number
+  _color: string
+  _mute: boolean
+}
+
 
 export interface ICanvas {
   paint(ctx: CanvasRenderingContext2D): void
