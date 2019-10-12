@@ -70,15 +70,15 @@ export default class DataStore {
   public setValue(paths: string, value: any) {
     const path = paths.split(this.DELIMITER)
     let ref: any = this.data
-    for (let i = 0, il = path.length; i < il; i++) {
-      const tmpRef = ref[path[i]]
-      if (tmpRef) {
-        ref = tmpRef
-      } else {
-        ref[path[i]] = {}
-      }
+    for (let i = 0, il = path.length - 1; i < il; i++) {
+      const p = path[i]
+      ref = ref[p]
     }
-    ref = value
+    ref[path[path.length - 1]] = value
+
+    this.listeners.forEach((l: any) => {
+      if (paths.indexOf(l.path) > -1) l.callback()
+    })
   }
 
   public get(path: string, suffix?: string) {

@@ -119,6 +119,5 @@ export default class LayerView {
     }
 
     this.label.textContent = this.state.get('name').value
-    // this.repaint()
   }
 }

@@ -2,8 +2,8 @@ import Tween from './tween'
 import { ILayer } from '../IInterface'
 
 export const style = function (element: HTMLElement, ...args: any[]) {
-  for (let i = 0; i > args.length; i++) {
-    const styles = arguments[i]
+  for (let i = 0; i < args.length; i++) {
+    const styles = args[i]
     for (const s in styles) {
       element.style[s] = styles[s]
     }

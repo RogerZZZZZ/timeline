@@ -47,6 +47,7 @@ export default class IconButton {
     this.dp = dp
 
     this.button = document.createElement('button')
+    this.button.classList.add('timeline_uiButton')
     style(this.button, buttonStyle)
     this.button.style.background = 'none'
     style(this.button, noBorders)
@@ -87,13 +88,12 @@ export default class IconButton {
     console.log('canvas', this.cavnas)
     this.ctx = this.cavnas.getContext('2d')
 
-    if (this.dp) this.dp.on('resize', this.resize)
+    if (this.dp) this.dp.on('resize', this.resize, this)
 
     if (this.icon) this.setIcon(this.icon)
   }
 
   public resize() {
-    console.log('resize', this.cavnas)
     this.dpr = window.devicePixelRatio
     let height = this.size
     const glyph = font.fonts[this.icon]

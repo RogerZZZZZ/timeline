@@ -3,7 +3,7 @@ import DataStore from './lib/data-store'
 import Dispatcher from './lib/dispatcher'
 import TimelinePanel from './paint/panel'
 import LayerPanel from './paint/layerCanbinet'
-import ScrollBar from './paint/scrollbar'
+import ScrollBar from './paint/ui_scrollbar'
 import Settings from './default'
 import { findTimeInLayer, style, timeAtLayer } from './lib/utils'
 import Theme from './theme'
@@ -47,9 +47,7 @@ export default class TimeLine {
   private layerPanel: LayerPanel
   private paneDiv: HTMLDivElement
   private paneTitleDiv: HTMLDivElement
-  private titleBarDiv: HTMLSpanElement
   private topRightBarDiv: HTMLDivElement
-  private root: any
 
   constructor(config: ITimelineConfig) {
     const hostContainer = document.getElementById(config.containerId)
@@ -64,7 +62,7 @@ export default class TimeLine {
     this.layerPanel = new LayerPanel(this.data, this.dispatcher)
 
     this.layers = this.data.get('layers').value
-    this.scrollBar = new ScrollBar(200, 100)
+    this.scrollBar = new ScrollBar(10, 200)
 
     this.containerDiv = document.createElement('div')
     this.containerDiv.style.cssText = 'position: absolute;'
@@ -78,7 +76,6 @@ export default class TimeLine {
       margin: 0,
       border: '1px solid ' + Theme.a,
       padding: 0,
-      overflow: 'hidden',
       backgroundColor: Theme.a,
       color: Theme.d,
       zIndex: 999,
@@ -92,10 +89,6 @@ export default class TimeLine {
       textAlign: 'center',
     })
 
-    this.titleBarDiv = document.createElement('span')
-    this.titleBarDiv.innerHTML = 'Timeline'
-    this.paneTitleDiv.appendChild(this.titleBarDiv)
-
     this.topRightBarDiv = document.createElement('div')
     style(this.topRightBarDiv, header_styles, {
       textAlign: 'right'
@@ -105,10 +98,6 @@ export default class TimeLine {
     this.paneDiv.appendChild(this.containerDiv)
     this.paneDiv.appendChild(this.paneTitleDiv)
 
-    this.root = document.createElement('timeliner')
-    if (this.root.createShadowRoot) this.root = this.root.createShadowRoot()
-
-    this.root.appendChild(this.paneDiv)
     this.containerDiv.appendChild(this.layerPanel.dom)
     this.containerDiv.appendChild(this.timelinePanel.dom)
     this.containerDiv.appendChild(this.scrollBar.dom)
@@ -125,8 +114,7 @@ export default class TimeLine {
     })
 
     this.paint()
-
-    hostContainer.appendChild(this.root)
+    hostContainer.appendChild(this.paneDiv)
   }
 
   private initDispatcher() {
@@ -146,7 +134,7 @@ export default class TimeLine {
         layer.values.splice(v.index, 1)
       }
       this.repaintAll()
-    })
+    }, this)
 
     dispatcher.on('value.change', (layer: any, value: any) => {
       if (layer._mute) return
@@ -165,7 +153,7 @@ export default class TimeLine {
       }
 
       this.repaintAll()
-    })
+    }, this)
 
     dispatcher.on('action:solo', (layer: any, solo: any) => {
       layer._solo = solo;
@@ -174,7 +162,7 @@ export default class TimeLine {
 
       // When a track is solo-ed, playback only changes values
       // of that layer.
-    });
+    }, this)
 
     dispatcher.on('action:mute', (layer: any, mute: boolean) => {
       layer._mute = mute;
@@ -188,7 +176,7 @@ export default class TimeLine {
       // no tweens will be created.
       // we can decide also to "lock in" layers
       // no changes to tween will be made etc.
-    });
+    }, this);
 
     //TODO
     dispatcher.on('ease', (layer: any, ease_type: string) => {
@@ -201,7 +189,7 @@ export default class TimeLine {
 
       // // undo_manager.save(new UndoState(data, 'Add Ease'));
       // this.repaintAll();
-    });
+    }, this);
 
     dispatcher.on('controls.toggle_play', () => {
       if (this.startPlay) {
@@ -209,7 +197,7 @@ export default class TimeLine {
       } else {
         this.startPlaying()
       }
-    })
+    }, this)
 
     dispatcher.on('controls.restart_play', () => {
       if (!this.startPlay) {
@@ -217,34 +205,34 @@ export default class TimeLine {
       }
 
       this.setCurrentTime(this.playedFrom)
-    })
+    }, this)
 
-    dispatcher.on('controls.play', this.startPlaying)
-    dispatcher.on('controls.pause', this.pausePlaying)
+    dispatcher.on('controls.play', this.startPlaying, this)
+    dispatcher.on('controls.pause', this.pausePlaying, this)
 
     dispatcher.on('controls.stop', () => {
       if (this.startPlay !== null) this.pausePlaying()
 
       // layer_panel.setCon
-    })
+    }, this)
 
-    dispatcher.on('time.update', this.setCurrentTime)
+    dispatcher.on('time.update', this.setCurrentTime, this)
 
     dispatcher.on('update.scrollTime', (v: number) => {
       this.data.get('ui:scrollTime').value = Math.max(0, v)
       this.repaintAll()
-    })
+    }, this)
 
     dispatcher.on('target.notify', (name: string, value: any) => {
       // TODO target
       console.log(name, value)
-    })
+    }, this)
 
     dispatcher.on('update.scale', (v: any) => {
       this.data.get('ui:timeScale').value = v;
 
       this.timelinePanel.repaint();
-    });
+    }, this);
 
     return dispatcher
   }
@@ -260,7 +248,7 @@ export default class TimeLine {
 
   public startPlaying() {
     this.startPlay = performance.now() - this.data.get('ui:currentTime').value * 1000
-
+    this.layerPanel.setControlStatus(true)
   }
 
   public pausePlaying() {
@@ -276,7 +264,7 @@ export default class TimeLine {
   }
 
   public paint() {
-    requestAnimationFrame(this.paint)
+    requestAnimationFrame(this.paint.bind(this))
 
     if (this.startPlay) {
       const t = (performance.now() - this.startPlay) / 1000
@@ -321,8 +309,20 @@ export default class TimeLine {
   }
 
   public resize(width: number, height: number) {
-    // TODO
-    console.log(width, height)
+    const w = width - 4
+    const h = height - 44
+
+    Settings.width = w - Settings.LEFT_PANE_WIDTH
+    Settings.height = h
+
+    Settings.TIMELINE_SCROLL_HEIGHT = h - Settings.MARKER_TRACK_HEIGHT
+    const scrollableHeight = Settings.TIMELINE_SCROLL_HEIGHT
+    this.scrollBar.setHeight(scrollableHeight - 2)
+
+    style(this.scrollBar.dom, {
+      top: Settings.MARKER_TRACK_HEIGHT + 'px',
+      left: (w - 16) + 'px'
+    })
   }
 
   public setTarget(t: any) {
@@ -346,4 +346,3 @@ export default class TimeLine {
     return values
   }
 }
-

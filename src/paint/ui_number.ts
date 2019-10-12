@@ -25,6 +25,7 @@ export default class UINumber {
     this.min = config.min === undefined ? -Infinity : config.min
 
     this.containerSpan = document.createElement('input')
+    this.containerSpan.classList.add('timeline_uiNumber')
     style(this.containerSpan, {
       textAlign: 'center',
       fontSize: '10px',
@@ -65,7 +66,11 @@ export default class UINumber {
       this.onChangeEvents.fire(this.spanValue)
     })
 
-    wrapDrag(this.containerSpan, this.onDown, this.onMove, this.onUp)
+    wrapDrag(
+      this.containerSpan,
+      this.onDown.bind(this),
+      this.onMove.bind(this),
+      this.onUp.bind(this))
 
     this.onChangeEvents = new SimpleEvents(null)
   }

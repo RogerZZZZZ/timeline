@@ -110,7 +110,7 @@ export default class LayerCabinet {
     this.totalTimeStore = this.data.get('ui:totalTime')
 
     this.currentTimeNumber.onChangeEvents.push((value: any) => {
-      dispatcher.fire('time:update', value)
+      dispatcher.fire('time.update', value)
     })
 
     this.totalTimeNumber.onChangeEvents.push((value: any) => {

@@ -48,6 +48,7 @@ export default class TimelinePanel {
     this.layers = this.data.get('layers').value
     this.canvas = document.createElement('canvas')
     this.containerDiv = document.createElement('div')
+    this.containerDiv.classList.add('timeline_panel')
     this.scrollCanvas = new Canvas(Settings.width, TIME_SCROLLER_HEIGHT)
 
     style(this.canvas, {
@@ -74,7 +75,7 @@ export default class TimelinePanel {
 
     this.repaint()
 
-    document.addEventListener('mousemove', this.onMouseMove)
+    document.addEventListener('mousemove', this.onMouseMove.bind(this))
 
     this.canvas.addEventListener('mouseout', () => {
       this.pointer = null;
@@ -86,7 +87,8 @@ export default class TimelinePanel {
         x: e.offsetx,
         y: e.offsety
       }
-      // Todo pointerEvents()
+      this.pointerEvents()
+      if (!this.mouseDownItem) this.dispatcher.fire('time.update', this.xToTime(e.offsetx))
     }, /** move */ (e: any) => {
       this.mouseDown = false
       if (this.mouseDownItem) {
@@ -173,7 +175,7 @@ export default class TimelinePanel {
       .rect(0, 0, Settings.width, this.scrollHeight)
       .translate(-this.scrollLeft, -this.scrollTop)
       .clip()
-      .run(this.check)
+      .run(this.check.bind(this))
       .restore()
   }
 
@@ -215,8 +217,6 @@ export default class TimelinePanel {
 
         this.renderItems.push(new this.EarsingRect(this, x, y1, x2, y2, frame, frame2))
       }
-
-      // TODO draw diamond
     }
 
     // render items
@@ -326,7 +326,7 @@ export default class TimelinePanel {
 			.rect(0, 0, Settings.width, this.scrollHeight)
 			.translate(-this.scrollLeft, -this.scrollTop)
 			.clip()
-				.run(this.drawLayerContents)
+				.run(this.drawLayerContents.bind(this))
       .restore();
 
     this.ctx.strokeStyle = 'red'

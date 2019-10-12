@@ -42,12 +42,14 @@ export default class ScrollBar {
     this.SCROLL_WIDTH = this.SCROLLBAR_WIDTH + this.SCROLLBAR_MARGIN * 2
 
     this.scrollTrack = document.createElement('div')
+    this.scrollTrack.classList.add('timeline_scrollTrack')
     style(this.scrollTrack, scrolltrack_style)
     this.scrollTrackHeight = h - 2
     this.scrollTrack.style.height = this.scrollTrackHeight + 'px'
     this.scrollTrack.style.width = this.SCROLL_WIDTH + 'px'
 
     this.scrollBar = document.createElement('div')
+    this.scrollBar.classList.add('timeline_scrollBar')
     style(this.scrollBar, scrollbar_style)
     this.scrollBar.style.width = this.SCROLLBAR_WIDTH + 'px'
     this.scrollBar.style.height = h / 2 + 'px'
