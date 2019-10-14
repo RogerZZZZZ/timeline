@@ -341,7 +341,6 @@ export default class TimelinePanel {
     this.ctx.moveTo(this.x, baseLine)
     this.ctx.lineTo(this.x, Settings.height)
     this.ctx.stroke()
-
     this.ctx.fillStyle = 'ref'
     this.ctx.textAlign = 'center'
     this.ctx.beginPath()
@@ -354,14 +353,11 @@ export default class TimelinePanel {
 		this.ctx.lineTo(this.x - 5, baseLine);
 		this.ctx.closePath();
 		this.ctx.fill();
-
 		this.ctx.fillStyle = 'white';
 		this.ctx.fillText(txt, this.x, baseLine - 4);
-
 		this.ctx.restore();
 
 		this.needRepaint = false;
-
   }
 
   private EarsingRect = class {

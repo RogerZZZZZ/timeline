@@ -62,7 +62,6 @@ export default class LayerCabinet {
     })
 
     this.stopButton = new UIButton(16, 'stop', 'stop', dispatcher)
-    console.log('stopbutton')
     style(this.stopButton.dom, buttonStyle)
     this.stopButton.onClick((e: any) => {
       e.preventDefault()

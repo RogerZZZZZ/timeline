@@ -85,8 +85,8 @@ export default class IconButton {
     })
 
     this.cavnas = document.createElement('canvas')
-    console.log('canvas', this.cavnas)
     this.ctx = this.cavnas.getContext('2d')
+    this.button.appendChild(this.cavnas)
 
     if (this.dp) this.dp.on('resize', this.resize, this)
 

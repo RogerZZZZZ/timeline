@@ -114,6 +114,10 @@ export default class TimeLine {
     })
 
     this.paint()
+
+    // const paneBoundingRect = this.paneDiv.getBoundingClientRect()
+    // console.log(paneBoundingRect)
+    // this.resize(paneBoundingRect.width, paneBoundingRect.height)
     hostContainer.appendChild(this.paneDiv)
   }
 
@@ -157,25 +161,11 @@ export default class TimeLine {
 
     dispatcher.on('action:solo', (layer: any, solo: any) => {
       layer._solo = solo;
-
       console.log(layer, solo);
-
-      // When a track is solo-ed, playback only changes values
-      // of that layer.
     }, this)
 
     dispatcher.on('action:mute', (layer: any, mute: boolean) => {
       layer._mute = mute;
-
-      // When a track is mute, playback does not play
-      // frames of those muted layers.
-
-      // also feels like hidden feature in photoshop
-
-      // when values are updated, eg. from slider,
-      // no tweens will be created.
-      // we can decide also to "lock in" layers
-      // no changes to tween will be made etc.
     }, this);
 
     //TODO
@@ -253,6 +243,7 @@ export default class TimeLine {
 
   public pausePlaying() {
     this.startPlay = null
+    this.layerPanel.setControlStatus(false)
   }
 
   public repaintAll() {
