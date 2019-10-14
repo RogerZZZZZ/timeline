@@ -1,4 +1,4 @@
-import DataStore from '../lib/data-store'
+import DataStore from '../lib/dataStore'
 import Dispatcher from '../lib/dispatcher'
 import Settings from '../default'
 import Layer from './layer'
@@ -114,7 +114,7 @@ export default class LayerCabinet {
 
     this.totalTimeNumber.onChangeEvents.push((value: any) => {
       this.totalTimeStore.value = value
-      this.repaint()
+      this.repaint.bind(this)()
     })
 
     this.topDiv.appendChild(this.currentTimeNumber.dom)

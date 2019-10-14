@@ -1,5 +1,5 @@
 import Theme from '../theme'
-import DataStore from '../lib/data-store'
+import DataStore from '../lib/dataStore'
 import Dispatcher from '../lib/dispatcher'
 
 class Rect {

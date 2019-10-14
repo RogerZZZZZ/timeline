@@ -1,5 +1,5 @@
 import { ILayer } from './IInterface'
-import DataStore from './lib/data-store'
+import DataStore from './lib/dataStore'
 import Dispatcher from './lib/dispatcher'
 import TimelinePanel from './paint/panel'
 import LayerPanel from './paint/layerCanbinet'
@@ -32,6 +32,7 @@ export class LayerProp implements ILayer{
 
 interface ITimelineConfig {
   containerId: string
+  data: Object
 }
 
 export default class TimeLine {
@@ -112,13 +113,35 @@ export default class TimeLine {
           break;
       }
     })
-
     this.paint()
+    this.loadData(config.data)
 
     // const paneBoundingRect = this.paneDiv.getBoundingClientRect()
     // console.log(paneBoundingRect)
     // this.resize(paneBoundingRect.width, paneBoundingRect.height)
     hostContainer.appendChild(this.paneDiv)
+  }
+
+  private loadData(data: any) {
+    this.data.setJSON(data)
+    if (this.data.getValue('ui') === undefined) {
+      this.data.setValue('ui', {
+        currentTime: 0,
+				totalTime: Settings.default_length,
+				scrollTime: 0,
+				timeScale: Settings.time_scale,
+      })
+    }
+
+    this.updateState()
+  }
+
+  private updateState() {
+    const layerStore = this.data.get('layers')
+    this.layerPanel.setState(layerStore)
+    this.timelinePanel.setState(layerStore)
+
+    this.repaintAll()
   }
 
   private initDispatcher() {
@@ -202,8 +225,7 @@ export default class TimeLine {
 
     dispatcher.on('controls.stop', () => {
       if (this.startPlay !== null) this.pausePlaying()
-
-      // layer_panel.setCon
+      this.setCurrentTime(0)
     }, this)
 
     dispatcher.on('time.update', this.setCurrentTime, this)

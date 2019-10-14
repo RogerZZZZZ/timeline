@@ -1,8 +1,9 @@
 import { ILayer } from '../IInterface'
 import Dispatcher from '../lib/dispatcher'
-import DataStore from '../lib/data-store'
+import DataStore from '../lib/dataStore'
 import Canvas from './canvas'
 import ScrollCanvas from '../paint/scrollCanvas'
+import UITimeStampPoint from './ui_timeStampPoint'
 import Settings from '../default'
 import { style, proxyCtx, formatTimeRuler } from '../lib/utils'
 import wrapperDrag from '../lib/drag'
@@ -204,18 +205,28 @@ export default class TimelinePanel {
       y = i * Settings.LINE_HEIGHT
 
       for (let j = 0; j < values.length; j++) {
-        frame = values[j]
-        frame2 = values[j + 1]
+        if (j < values.length - 1) {
+          frame = values[j]
+          frame2 = values[j + 1]
 
-        const x = this.timeToX(frame.time)
-        const x2 = this.timeToX(frame2.time)
+          const x = this.timeToX(frame.time)
+          const x2 = this.timeToX(frame2.time)
 
-        if (!frame.tween || frame.tween === 'none') continue
+          if (!frame.tween || frame.tween === 'none') continue
 
-        const y1 = y + 2
-        const y2 = y + Settings.LINE_HEIGHT - 2
+          const y1 = y + 2
+          const y2 = y + Settings.LINE_HEIGHT - 2
 
-        this.renderItems.push(new this.EarsingRect(this, x, y1, x2, y2, frame, frame2))
+          this.renderItems.push(new this.EarsingRect(this, x, y1, x2, y2, frame, frame2))
+        }
+
+        this.renderItems.push(
+          new UITimeStampPoint(
+            this.xToTime(values[j].time),
+            y,
+            this.canvas,
+            this.ctxProxy,
+          ))
       }
     }
 
@@ -230,7 +241,7 @@ export default class TimelinePanel {
     let item: any
     const lastOver = this.overItem
     this.overItem = null
-    for (let i = 0; i < this.renderItems.length; i++) {
+    for (let i = this.renderItems.length; i-- > 0;) {
       item = this.renderItems[i]
       item.path(this.ctxProxy)
 
@@ -242,7 +253,7 @@ export default class TimelinePanel {
 
     if (this.overItem && this.overItem !== lastOver) {
       item = lastOver
-      if (item.mouseout) item.mouseout()
+      if (item && item.mouseout) item.mouseout()
     }
 
     if (this.overItem) {
@@ -426,10 +437,10 @@ export default class TimelinePanel {
     this.scrollCanvas.setSize(Settings.width, TIME_SCROLLER_HEIGHT)
   }
 
-  // private setState(state: any) {
-  //   this.layers = state.value
-  //   this.repaint()
-  // }
+  public setState(state: any) {
+    this.layers = state.value
+    this.repaint()
+  }
 
   get dom() {
     return this.containerDiv

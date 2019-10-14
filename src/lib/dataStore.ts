@@ -88,4 +88,12 @@ export default class DataStore {
     return new DataProx(this, path)
   }
 
+  public setJSON(data: any) {
+    if (typeof data === 'string') {
+      this.data = JSON.parse(data)
+    } else if (typeof data === 'object') {
+      this.data = data
+    }
+  }
+
 }
