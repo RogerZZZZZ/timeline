@@ -54,7 +54,7 @@ export default class ScrollCanvas {
   private rect: Rect
   private dispatcher: Dispatcher
   private data: DataStore
-  private draggingOffset: number
+  private draggingOffset: number | null = 0
 
   public add: any
   public remove: any
@@ -73,14 +73,11 @@ export default class ScrollCanvas {
   public paint(ctx: CanvasRenderingContext2D) {
     const totalTime = this.data.get('ui:totalTime').value
     const scrollTime = this.data.get('ui:scrollTime').value
-    const currentTime = this.data.get('ui:currentTime').value
     const pixelsPreSecond = this.data.get('ui:timeScale').value
-
-    ctx.save()
-
     const w = this.width - 2 * this.MARGINS
     const h = 16
 
+    ctx.save()
     ctx.clearRect(0, 0, this.width, this.height)
     ctx.translate(this.MARGINS, 5)
     ctx.beginPath()
@@ -95,17 +92,6 @@ export default class ScrollCanvas {
     this.scroller.left = scrollTime / totalTime * w
     this.rect.setSize(this.scroller.left, 0, this.scroller.grip_length, h)
     this.rect.paint(ctx)
-
-    const r = currentTime / totalTime * w
-    ctx.fillStyle = Theme.c
-    ctx.lineWidth = 2
-    ctx.beginPath()
-
-    // line
-    ctx.rect(r, 0, 2, h + 5)
-    ctx.fill()
-    ctx.fillText(currentTime && currentTime.toFixed(2), r, h + 14)
-    ctx.fillText(totalTime, 300, 14)
     ctx.restore()
   }
 
@@ -123,7 +109,7 @@ export default class ScrollCanvas {
   }
 
   public onMove(e: any) {
-    if (!this.draggingOffset) {
+    if (this.draggingOffset !== null) {
       const totalTime = this.data.get('ui:totalTime').value
       const w = this.width - 2 * this.MARGINS
 
@@ -134,6 +120,6 @@ export default class ScrollCanvas {
   }
 
   public onUp() {
-    this.draggingOffset = -1
+    this.draggingOffset = null
   }
 }
