@@ -44,7 +44,6 @@ class ToggleButton {
 export default class LayerView {
   public dom: HTMLDivElement
   private label: HTMLSpanElement
-  private keyframeButton: HTMLButtonElement
   private dispatcher: Dispatcher
   private layer: ILayer
   private state: any
@@ -56,16 +55,15 @@ export default class LayerView {
     this.dom = document.createElement('div')
     this.label = document.createElement('span')
 
-    this.label.style.cssText = 'font-size: 10px; width: 60px; margin: 0; float: right; text-align: right;'
-
-    const height = Settings.LINE_HEIGHT - 1
-    this.keyframeButton = document.createElement('button')
-    this.keyframeButton.innerHTML = '&#9672;'; // '&diams;' &#9671; 9679 9670 9672
-    this.keyframeButton.style.cssText = 'background: none; font-size: 12px; padding: 0px; font-family: monospace; float: right; width: 20px; height: ' + height + 'px; border-style:none; outline: none;'; //  border-style:inset;
-
-    this.keyframeButton.addEventListener('click', () => {
-      dispatcher.fire('keyframe', layer, this.state.get('_value').value);
-    });
+    style(this.label, {
+      fontSize: '10px',
+      width: '60px',
+      height: (Settings.LINE_HEIGHT - 1) + 'px',
+      lineHeight: (Settings.LINE_HEIGHT - 1) + 'px',
+      margin: 0,
+      float: 'right',
+      textAlign: 'center',
+    })
 
     const soloToggle = new ToggleButton('S')
     this.dom.appendChild(soloToggle.dom)
@@ -82,7 +80,6 @@ export default class LayerView {
     }
 
     this.dom.appendChild(this.label)
-    this.dom.appendChild(this.keyframeButton)
 
     style(this.dom, {
       textAlign: 'left',
@@ -96,21 +93,13 @@ export default class LayerView {
   }
 
   public repaint(s: any) {
-    this.keyframeButton.style.color = Theme.b
     const o = timeAtLayer(this.layer, s)
-
     if (!o) return
 
-    if (o.keyframe) {
-      this.keyframeButton.style.color = Theme.c
-    }
-
     this.state.get('_value').value = o.value
-    this.dispatcher.fire('target.notify', this.layer.name, o.value)
   }
 
-  public setState(l: any, s: any) {
-    this.label = l
+  public setState(s: any) {
     this.state = s
 
     const tmpValue = this.state.get('_value')
@@ -119,5 +108,6 @@ export default class LayerView {
     }
 
     this.label.textContent = this.state.get('name').value
+    this.repaint(null)
   }
 }

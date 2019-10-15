@@ -147,7 +147,7 @@ export default class LayerCabinet {
         continue
       }
 
-      this.layerUis[i].setState(layers[i], this.layerStore.get(i))
+      this.layerUis[i].setState(this.layerStore.get(i))
       this.layerUis[i].repaint(s)
     }
   }

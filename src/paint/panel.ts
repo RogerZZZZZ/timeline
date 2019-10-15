@@ -35,9 +35,6 @@ export default class TimelinePanel {
   private scrollTop = 0
   private scrollLeft = 0
   private canvasBounds: any
-  private mouseDownItem: any
-  private mouseDown = false
-  private mouseDownThenMove = false
   private overItem: any
   private currentTime: number
   private x: number
@@ -83,33 +80,15 @@ export default class TimelinePanel {
     })
 
     wrapperDrag(this.canvas, /** down */ (e: any) => {
-      this.mouseDown = true
       this.pointer = {
         x: e.offsetx,
         y: e.offsety
       }
       this.pointerEvents()
-      if (!this.mouseDownItem) this.dispatcher.fire('time.update', this.xToTime(e.offsetx))
     }, /** move */ (e: any) => {
-      this.mouseDown = false
-      if (this.mouseDownItem) {
-        this.mouseDownThenMove = true
-        if (this.mouseDownItem.mouseDrag) {
-          this.mouseDownItem.mouseDrag(e)
-        }
-      } else {
-        dispatcher.fire('time.update', this.xToTime(e.offsetx))
-      }
+      dispatcher.fire('time.update', this.xToTime(e.offsetx))
     }, /** up */ (e: any) => {
-      if (this.mouseDownThenMove) {
-        dispatcher.fire('keyframe.move')
-      } else {
         dispatcher.fire('time.update', this.xToTime(e.offsetx))
-      }
-
-      this.mouseDown = false
-      this.mouseDownItem = null
-      this.mouseDownThenMove = false
     })
   }
 
@@ -121,7 +100,6 @@ export default class TimelinePanel {
   }
 
   public onPointerMove(x: number, y: number) {
-    if (this.mouseDownItem) return
     this.pointer = { x, y }
   }
 
@@ -222,7 +200,7 @@ export default class TimelinePanel {
 
         this.renderItems.push(
           new UITimeStampPoint(
-            this.xToTime(values[j].time),
+            this.timeToX(values[j].time),
             y,
             this.canvas,
             this.ctxProxy,
@@ -256,11 +234,8 @@ export default class TimelinePanel {
       if (item && item.mouseout) item.mouseout()
     }
 
-    if (this.overItem) {
-      item = this.overItem
-      if (item.mouseover) item.mouseover()
-
-      if (this.mouseDown) this.mouseDownItem = item
+    if (this.overItem && this.overItem.mouseover) {
+      this.overItem.mouseover()
     }
   }
 

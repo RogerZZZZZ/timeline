@@ -194,14 +194,6 @@ export default class TimeLine {
     //TODO
     dispatcher.on('ease', (layer: any, ease_type: string) => {
       console.log(layer, ease_type)
-      // var t = this.data.get('ui:currentTime').value;
-      // var v = utils.timeAtLayer(layer, t);
-      // if (v && v.entry) {
-      //   v.entry.tween  = ease_type;
-      // }
-
-      // // undo_manager.save(new UndoState(data, 'Add Ease'));
-      // this.repaintAll();
     }, this);
 
     dispatcher.on('controls.toggle_play', () => {
@@ -233,11 +225,6 @@ export default class TimeLine {
     dispatcher.on('update.scrollTime', (v: number) => {
       this.data.get('ui:scrollTime').value = Math.max(0, v)
       this.repaintAll()
-    }, this)
-
-    dispatcher.on('target.notify', (name: string, value: any) => {
-      // TODO target
-      console.log(name, value)
     }, this)
 
     dispatcher.on('update.scale', (v: any) => {

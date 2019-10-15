@@ -1,5 +1,6 @@
 import { ICanvas } from '../IInterface'
 import ScrollCanvas from './scrollCanvas'
+import wrapDrag from '../lib/drag'
 
 export default class Canvas implements ICanvas {
   private width: number
@@ -13,10 +14,17 @@ export default class Canvas implements ICanvas {
   constructor(w: number, h: number) {
     this.width = w
     this.height = h
-
     this.create()
     this.setSize(w, h)
 
+    wrapDrag(this.canvas,
+      /** down */ (e: any) => {
+        this.child && this.child.onDown && this.child.onDown(e)
+      }, /** move */ (e: any) => {
+        this.child && this.child.onMove && this.child.onMove(e)
+      }, /** up */ () => {
+        this.child && this.child.onUp && this.child.onUp()
+      })
   }
 
   public create() {
