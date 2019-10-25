@@ -18,15 +18,22 @@ export interface IData {
 
 export interface ILayer {
   name: string
-  values: any
-  _value: number
-  _color: string
-  _mute: boolean
+  timeStamps: ITimeStamp[]
+  _color?: string
+  _mute?: boolean
 }
-
 
 export interface ICanvas {
   paint(ctx: CanvasRenderingContext2D): void
   add(item: any): void
   remove(item: any): void
+}
+
+export interface IRawData {
+  layers: ILayer[]
+}
+
+export interface ITimeStamp {
+  startTime: number
+  duration: number
 }

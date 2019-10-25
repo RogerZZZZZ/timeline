@@ -2,7 +2,6 @@ import DataStore from '../lib/dataStore'
 import Dispatcher from '../lib/dispatcher'
 import Settings from '../default'
 import Layer from './layer'
-import UINumber from './ui_number'
 import UIButton from './ui_button'
 import { style } from '../lib/utils'
 
@@ -23,14 +22,11 @@ export default class LayerCabinet {
   private playing = false
   private draggingRange = 0
   private currentTimeStore: any
-  private totalTimeStore: any
   private playButton: UIButton
   private stopButton: UIButton
   private layerStore: any
   private layerUis: Layer[] = []
   private unusedLayer: Layer[] = []
-  private currentTimeNumber: UINumber
-  private totalTimeNumber: UINumber
 
   constructor(data: DataStore, dispatcher: Dispatcher) {
     this.data = data
@@ -70,10 +66,10 @@ export default class LayerCabinet {
 
     this.rangeInput = document.createElement('input')
     this.rangeInput.type = 'range'
-    this.rangeInput.value = '0'
-    this.rangeInput.min = '-1'
-    this.rangeInput.max = '+1'
-    this.rangeInput.step = '0.125'
+    this.rangeInput.min = '1'
+    this.rangeInput.value = '5'
+    this.rangeInput.max = '10'
+    this.rangeInput.step = '1'
 
     style(this.rangeInput, {
       width: '90px',
@@ -96,35 +92,15 @@ export default class LayerCabinet {
       this.rangeUpdate()
     })
 
-    this.containerDiv.appendChild(this.topDiv)
-
-    const timeOptions = {
-      min: 0,
-      step: 0.125
-    }
-    this.currentTimeNumber = new UINumber(timeOptions)
-    this.totalTimeNumber = new UINumber(timeOptions)
-
     this.currentTimeStore = this.data.get('ui:currentTime')
-    this.totalTimeStore = this.data.get('ui:totalTime')
 
-    this.currentTimeNumber.onChangeEvents.push((value: any) => {
-      dispatcher.fire('time.update', value)
-    })
-
-    this.totalTimeNumber.onChangeEvents.push((value: any) => {
-      this.totalTimeStore.value = value
-      this.repaint.bind(this)()
-    })
-
-    this.topDiv.appendChild(this.currentTimeNumber.dom)
-    this.topDiv.appendChild(document.createTextNode('/'))
-    this.topDiv.appendChild(this.totalTimeNumber.dom)
+    this.containerDiv.appendChild(this.topDiv)
     this.topDiv.appendChild(this.playButton.dom)
     this.topDiv.appendChild(this.stopButton.dom)
     this.topDiv.appendChild(this.rangeInput)
-
     this.setState(this.layerStore)
+
+    this.rangeUpdate()
   }
 
   public scrollTo(x: number) {
@@ -133,10 +109,6 @@ export default class LayerCabinet {
 
   public repaint() {
     const s = this.currentTimeStore.value
-    this.currentTimeNumber.setValue(s)
-    this.totalTimeNumber.setValue(this.totalTimeStore.value)
-    this.currentTimeNumber.paint()
-    this.totalTimeNumber.paint()
     const layers = this.layerStore.value
 
     for (let i = this.layerUis.length; i-- > 0;) {
@@ -185,7 +157,10 @@ export default class LayerCabinet {
   }
 
   private rangeUpdate() {
-    this.dispatcher.fire('update.scale', Math.pow(100, -this.rangeInput.value))
+    console.log(this.rangeInput.value)
+    if (Number(this.rangeInput.value) > 0.9) {
+      this.dispatcher.fire('update.scale', Number(this.rangeInput.value) / 10)
+    }
   }
 
   get dom() {

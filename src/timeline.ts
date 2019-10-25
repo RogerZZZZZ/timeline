@@ -1,11 +1,11 @@
-import { ILayer } from './IInterface'
+import { ILayer, IRawData } from './IInterface'
 import DataStore from './lib/dataStore'
 import Dispatcher from './lib/dispatcher'
 import TimelinePanel from './paint/panel'
 import LayerPanel from './paint/layerCanbinet'
 import ScrollBar from './paint/ui_scrollbar'
 import Settings from './default'
-import { findTimeInLayer, style, timeAtLayer } from './lib/utils'
+import { findTimeInLayer, style, timeAtLayer, calculateDuration } from './lib/utils'
 import Theme from './theme'
 
 const header_styles = {
@@ -17,9 +17,9 @@ const header_styles = {
   overflow: 'hidden'
 };
 
-export class LayerProp implements ILayer{
+export class LayerProp implements ILayer {
   public name: string
-  public values: any = []
+  public timeStamps: any = []
   public _value = 0
   public _color: string
   public _mute: boolean = false
@@ -32,7 +32,7 @@ export class LayerProp implements ILayer{
 
 interface ITimelineConfig {
   containerId: string
-  data: Object
+  data: IRawData
 }
 
 export default class TimeLine {
@@ -115,10 +115,8 @@ export default class TimeLine {
     })
     this.paint()
     this.loadData(config.data)
+    this.data.setValue('ui:maxEnd', calculateDuration(config.data.layers))
 
-    // const paneBoundingRect = this.paneDiv.getBoundingClientRect()
-    // console.log(paneBoundingRect)
-    // this.resize(paneBoundingRect.width, paneBoundingRect.height)
     hostContainer.appendChild(this.paneDiv)
   }
 
@@ -163,7 +161,7 @@ export default class TimeLine {
       this.repaintAll()
     }, this)
 
-    dispatcher.on('value.change', (layer: any, value: any) => {
+    dispatcher.on('value.change', (layer: any) => {
       if (layer._mute) return
 
       const t = this.data.get('ui:currentTime').value
@@ -172,11 +170,8 @@ export default class TimeLine {
       if (typeof(v) === 'number') {
         layer.values.splice(v, 0, {
           time: t,
-          value: value,
           _color: '#' + (Math.random() * 0xffffff | 0).toString(16)
         });
-      } else {
-        v.object.value = value
       }
 
       this.repaintAll()
@@ -189,11 +184,6 @@ export default class TimeLine {
 
     dispatcher.on('action:mute', (layer: any, mute: boolean) => {
       layer._mute = mute;
-    }, this);
-
-    //TODO
-    dispatcher.on('ease', (layer: any, ease_type: string) => {
-      console.log(layer, ease_type)
     }, this);
 
     dispatcher.on('controls.toggle_play', () => {

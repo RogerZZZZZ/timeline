@@ -132,15 +132,15 @@ export default class TimelinePanel {
   public setTimeScale() {
     const v = this.data.get('ui:timeScale').value
     if (timeScale !== v) {
-      timeScale = v
+      timeScale = v * 60
       this.timeScaled()
     }
   }
 
   private timeScaled() {
-    tickMark1 = timeScale / 60;
-    tickMark2 = 2 * tickMark1;
-    tickMark3 = 10 * tickMark1;
+    tickMark1 = timeScale / 60
+    tickMark2 = 2 * tickMark1
+    tickMark3 = 10 * tickMark1
   }
 
   public pointerEvents() {
@@ -173,34 +173,23 @@ export default class TimelinePanel {
         .stroke()
     }
 
-    let frame: any
-    let frame2: any
-
     for (let i = 0; i < this.layers.length; i++) {
       const layer = this.layers[i]
-      const values: any = layer.values
-
+      const values: any = layer.timeStamps
       y = i * Settings.LINE_HEIGHT
 
       for (let j = 0; j < values.length; j++) {
-        if (j < values.length - 1) {
-          frame = values[j]
-          frame2 = values[j + 1]
+        const frame = values[j]
+        const x = this.timeToX(frame.startTime)
+        const x2 = this.timeToX(frame.startTime + frame.duration)
+        const y1 = y + 2
+        const y2 = y + Settings.LINE_HEIGHT - 2
 
-          const x = this.timeToX(frame.time)
-          const x2 = this.timeToX(frame2.time)
-
-          if (!frame.tween || frame.tween === 'none') continue
-
-          const y1 = y + 2
-          const y2 = y + Settings.LINE_HEIGHT - 2
-
-          this.renderItems.push(new this.EarsingRect(this, x, y1, x2, y2, frame, frame2))
-        }
+        this.renderItems.push(new this.EarsingRect(this, x, y1, x2, y2, frame))
 
         this.renderItems.push(
           new UITimeStampPoint(
-            this.timeToX(values[j].time),
+            this.timeToX(frame.startTime),
             y,
             this.canvas,
             this.ctxProxy,
@@ -275,7 +264,7 @@ export default class TimelinePanel {
       this.ctx.textAlign = 'center'
 
       const t = formatTimeRuler((i * units - offsetUnits) / timeScale + frameStart)
-      this.ctx.fillText(t, this.x, 38)
+      this.ctx.fillText(t, this.x, MARKER_TRACK_HEIGHT - 18)
     }
 
     units = timeScale / tickMark2
@@ -286,7 +275,7 @@ export default class TimelinePanel {
       this.ctx.beginPath()
       this.x = i * units + LEFT_GUTTER - offsetUnits
       this.ctx.moveTo(this.x, MARKER_TRACK_HEIGHT)
-      this.ctx.lineTo(this.x, MARKER_TRACK_HEIGHT - 16)
+      this.ctx.lineTo(this.x, MARKER_TRACK_HEIGHT - 14)
       this.ctx.stroke()
     }
 
@@ -353,7 +342,6 @@ export default class TimelinePanel {
     private x2: number
     private y2: number
     private frame: any
-    private frame2: any
 
     constructor(
       superThis: TimelinePanel,
@@ -361,15 +349,13 @@ export default class TimelinePanel {
       y1: number,
       x2: number,
       y2: number,
-      frame: any,
-      frame2: any) {
+      frame: any) {
       this.superThis = superThis
       this.x1 = x1
       this.y1 = y1
       this.x2 = x2
       this.y2 = y2
       this.frame = frame
-      this.frame2 = frame2
     }
 
     public path() {
@@ -382,22 +368,6 @@ export default class TimelinePanel {
       this.path()
       this.superThis.ctx.fillStyle = this.frame._color
       this.superThis.ctx.fill()
-    }
-
-    public mouseover() {
-      this.superThis.canvas.style.cursor = 'pointer'
-    }
-
-    public mouseout() {
-      this.superThis.canvas.style.cursor = 'default'
-    }
-
-    public mouseDrag(e: any) {
-      const t1 = Math.max(0, this.superThis.xToTime(this.x1 + e.dx))
-      this.frame.time = t1
-
-      const t2 = Math.max(0, this.superThis.xToTime(this.x2 + e.dx))
-      this.frame2.time = t2
     }
   }
 

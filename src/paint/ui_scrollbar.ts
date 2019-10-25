@@ -18,7 +18,6 @@ const scrollbar_style = {
 
 
 export default class ScrollBar {
-  // private w: number
   private h: number
   private scrollTrack: HTMLDivElement
   private scrollBar: HTMLDivElement
@@ -35,7 +34,6 @@ export default class ScrollBar {
   public onScrollEvents: SimpleEvents
 
   constructor(w: number, h: number) {
-    // this.w = w
     this.h = h
 
     this.SCROLLBAR_WIDTH = w ? w : 12
