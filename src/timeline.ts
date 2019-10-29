@@ -42,6 +42,7 @@ export default class TimeLine {
   private layers: any
   private scrollBar: ScrollBar
   private startPlay: number | null
+  private isPlaying: boolean = false
   private playedFrom: number
   private needResize = true
   private containerDiv: HTMLDivElement
@@ -102,18 +103,18 @@ export default class TimeLine {
 
     this.containerDiv.appendChild(this.layerPanel.dom)
     this.containerDiv.appendChild(this.timelinePanel.dom)
-    this.containerDiv.appendChild(this.scrollBar.dom)
+    // this.containerDiv.appendChild(this.scrollBar.dom)
 
-    this.scrollBar.onScrollEvents.push((type: string, scrollTo: number) => {
-      switch(type) {
-        case 'scrollto':
-          this.layerPanel.scrollTo(scrollTo)
-          this.timelinePanel.scrollTo(scrollTo)
-          break;
-        default:
-          break;
-      }
-    })
+    // this.scrollBar.onScrollEvents.push((type: string, scrollTo: number) => {
+    //   switch(type) {
+    //     case 'scrollto':
+    //       this.layerPanel.scrollTo(scrollTo)
+    //       this.timelinePanel.scrollTo(scrollTo)
+    //       break;
+    //     default:
+    //       break;
+    //   }
+    // })
 
     this.data.setValue('ui:maxEnd', calculateDuration(config.data.layers))
     this.paint()
@@ -186,7 +187,7 @@ export default class TimeLine {
     }, this);
 
     dispatcher.on('controls.toggle_play', () => {
-      if (this.startPlay) {
+      if (this.isPlaying) {
         this.pausePlaying()
       } else {
         this.startPlaying()
@@ -194,7 +195,7 @@ export default class TimeLine {
     }, this)
 
     dispatcher.on('controls.restart_play', () => {
-      if (!this.startPlay) {
+      if (!this.isPlaying) {
         this.startPlaying()
       }
 
@@ -205,7 +206,7 @@ export default class TimeLine {
     dispatcher.on('controls.pause', this.pausePlaying, this)
 
     dispatcher.on('controls.stop', () => {
-      if (this.startPlay !== null) this.pausePlaying()
+      if (this.isPlaying) this.pausePlaying()
       this.setCurrentTime(0)
     }, this)
 
@@ -227,26 +228,29 @@ export default class TimeLine {
   public setCurrentTime(value: number) {
     this.data.get('ui:currentTime').value = Math.max(0, value)
 
-    if (this.startPlay) {
+    if (this.isPlaying) {
       this.startPlay = performance.now() - value * 1000
     }
     this.repaintAll()
   }
 
   public startPlaying() {
+    if (!this.isPlaying && this.startPlay === this.data.get('ui:maxEnd').value) {
+      this.setCurrentTime(0)
+    }
     this.startPlay = performance.now() - this.data.get('ui:currentTime').value * 1000
+    this.isPlaying = true
     this.layerPanel.setControlStatus(true)
   }
 
   public pausePlaying() {
-    this.startPlay = null
+    this.isPlaying = false
     this.layerPanel.setControlStatus(false)
   }
 
   public repaintAll() {
     const contentHeight = this.layers.length * Settings.LINE_HEIGHT
     this.scrollBar.setLength(Settings.TIMELINE_SCROLL_HEIGHT / contentHeight)
-
     this.layerPanel.repaint()
     this.timelinePanel.repaint()
   }
@@ -254,13 +258,16 @@ export default class TimeLine {
   public paint() {
     requestAnimationFrame(this.paint.bind(this))
 
-    if (this.startPlay) {
-      const t = (performance.now() - this.startPlay) / 1000
-      this.setCurrentTime(t)
+    if (this.isPlaying && this.startPlay) {
+      let t = (performance.now() - this.startPlay) / 1000
 
-      if (t > this.data.get('ui:totalTime').value) {
-        this.startPlay = performance.now()
+      if (t >= this.data.get('ui:maxEnd').value) {
+        this.startPlay = this.data.get('ui:maxEnd').value
+        this.isPlaying = false
+        this.layerPanel.setControlStatus(false)
+        t = this.data.get('ui:maxEnd').value
       }
+      this.setCurrentTime(t)
     }
 
     if (this.needResize) {
@@ -284,7 +291,6 @@ export default class TimeLine {
       overflow: 'hidden'
     })
     left.style.width = Settings.LEFT_PANE_WIDTH + 'px'
-
     right.style.position = 'absolute'
     right.style.top = '0px'
     right.style.left = Settings.LEFT_PANE_WIDTH + 'px'

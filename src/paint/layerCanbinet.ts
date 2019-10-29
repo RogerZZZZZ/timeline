@@ -66,9 +66,9 @@ export default class LayerCabinet {
 
     this.rangeInput = document.createElement('input')
     this.rangeInput.type = 'range'
-    this.rangeInput.min = '1'
-    this.rangeInput.value = '5'
-    this.rangeInput.max = '10'
+    this.rangeInput.min = '3'
+    this.rangeInput.value = '9'
+    this.rangeInput.max = '15'
     this.rangeInput.step = '1'
 
     style(this.rangeInput, {
