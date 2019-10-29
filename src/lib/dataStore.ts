@@ -95,5 +95,4 @@ export default class DataStore {
       this.data = data
     }
   }
-
 }

@@ -132,7 +132,7 @@ export default class TimelinePanel {
   public setTimeScale() {
     const v = this.data.get('ui:timeScale').value
     if (timeScale !== v) {
-      timeScale = v * 60
+      timeScale = v
       this.timeScaled()
     }
   }

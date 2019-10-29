@@ -58,6 +58,7 @@ export default class TimeLine {
     }
     this.data = new DataStore()
     this.dispatcher = this.initDispatcher()
+    this.loadData(config.data)
 
     this.timelinePanel = new TimelinePanel(this.data, this.dispatcher)
     this.layerPanel = new LayerPanel(this.data, this.dispatcher)
@@ -113,9 +114,10 @@ export default class TimeLine {
           break;
       }
     })
-    this.paint()
-    this.loadData(config.data)
+
     this.data.setValue('ui:maxEnd', calculateDuration(config.data.layers))
+    this.paint()
+    this.updateState()
 
     hostContainer.appendChild(this.paneDiv)
   }
@@ -127,18 +129,15 @@ export default class TimeLine {
         currentTime: 0,
 				totalTime: Settings.default_length,
 				scrollTime: 0,
-				timeScale: Settings.time_scale,
+				timeScale: this.data.get('ui:timeScale').value || Settings.time_scale,
       })
     }
-
-    this.updateState()
   }
 
   private updateState() {
     const layerStore = this.data.get('layers')
     this.layerPanel.setState(layerStore)
     this.timelinePanel.setState(layerStore)
-
     this.repaintAll()
   }
 
@@ -218,8 +217,7 @@ export default class TimeLine {
     }, this)
 
     dispatcher.on('update.scale', (v: any) => {
-      this.data.get('ui:timeScale').value = v;
-
+      this.data.get('ui:timeScale').value = v * Settings.time_scale;
       this.timelinePanel.repaint();
     }, this);
 

@@ -88,8 +88,15 @@ export default class ScrollCanvas {
     const totalTimePixels = totalTime * pixelsPreSecond
     const k = w / totalTimePixels
     this.scroller.k = k
-    this.scroller.grip_length = w * k
-    this.scroller.left = scrollTime / totalTime * w
+    const len = w * k
+    const left = scrollTime / totalTime * w
+    if (len + left <= w) {
+      this.scroller.grip_length = len
+      this.scroller.left = left
+    } else {
+      this.scroller.grip_length = len
+      this.scroller.left = w - len
+    }
     this.rect.setSize(this.scroller.left, 0, this.scroller.grip_length, h)
     this.rect.paint(ctx)
     ctx.restore()
@@ -112,8 +119,9 @@ export default class ScrollCanvas {
     if (this.draggingOffset !== null) {
       const totalTime = this.data.get('ui:totalTime').value
       const w = this.width - 2 * this.MARGINS
-
-      this.dispatcher.fire('update.scrollTime', (this.draggingOffset + e.dx) / w * totalTime)
+      if (this.scroller.grip_length + this.scroller.left <= w) {
+        this.dispatcher.fire('update.scrollTime', (this.draggingOffset + e.dx) / w * totalTime)
+      }
     } else {
       this.onDown(e)
     }

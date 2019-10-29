@@ -6,6 +6,6 @@ export default {
 	height: 200,
 	TIMELINE_SCROLL_HEIGHT: 0,
 	LEFT_PANE_WIDTH: 250,
-	time_scale: 60, // number of pixels to 1 second
+	time_scale: 80, // number of pixels to 1 second
   default_length: 20, // seconds
 }
