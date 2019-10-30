@@ -2,7 +2,7 @@ import { ILayer } from '../IInterface'
 import Dispatcher from '../lib/dispatcher'
 import Theme from '../theme'
 import Settings from '../default'
-import { style, timeAtLayer } from '../lib/utils'
+import { style } from '../lib/utils'
 
 class ToggleButton {
   private text: string
@@ -35,6 +35,11 @@ class ToggleButton {
     }
   }
 
+  public setText(text: string) {
+    this.text = text
+    this.button.textContent = text
+  }
+
   get dom() {
     return this.button
   }
@@ -45,13 +50,10 @@ export default class LayerView {
   public dom: HTMLDivElement
   private label: HTMLSpanElement
   private dispatcher: Dispatcher
-  private layer: ILayer
-  private state: any
+  private finishFlag: boolean = false
 
   constructor(layer: ILayer, dispatcher: Dispatcher) {
     this.dispatcher = dispatcher
-    this.layer = layer
-
     this.dom = document.createElement('div')
     this.label = document.createElement('span')
 
@@ -92,22 +94,15 @@ export default class LayerView {
     })
   }
 
-  public repaint(s: any) {
-    const o = timeAtLayer(this.layer, s)
-    if (!o) return
-
-    this.state.get('_value').value = o.value
-  }
-
   public setState(s: any) {
-    this.state = s
-
-    const tmpValue = this.state.get('_value')
-    if (tmpValue.value === undefined) {
-      tmpValue.value = 0
+    const newFlag = s.value._finish
+    if (this.finishFlag !== newFlag) {
+      if (newFlag) {
+        this.label.textContent = 'finish'
+      } else {
+        this.label.textContent = 'playing'
+      }
+      this.finishFlag = newFlag
     }
-
-    this.label.textContent = this.state.get('name').value
-    this.repaint(null)
   }
 }

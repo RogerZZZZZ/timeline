@@ -1,4 +1,5 @@
 import { ILayer } from '../IInterface'
+import DataStore from './dataStore'
 
 export const style = function (element: HTMLElement, ...args: any[]) {
   for (let i = 0; i < args.length; i++) {
@@ -90,58 +91,6 @@ export const findTimeInLayer = (layer: ILayer, time: number) => {
   return i
 }
 
-export const timeAtLayer = (layer: ILayer, t: number) => {
-	let values = layer.timeStamps;
-	let i, il, entry, prev_entry;
-
-	il = values.length;
-
-	if (il === 0) return;
-	if (layer._mute) return
-
-	entry = values[0];
-	if (t < entry.startTime) {
-		return {
-			value: entry.startTime,
-			can_tween: false, // cannot tween
-			keyframe: false // not on keyframe
-		};
-	}
-
-	for (i=0; i<il; i++) {
-		prev_entry = entry;
-		entry = values[i];
-
-		if (t === entry.startTime) {
-			if (i === il - 1) {
-				return {
-					entry: prev_entry,
-					tween: prev_entry.startTime,
-					can_tween: il > 1,
-					value: entry.startTime,
-					keyframe: true
-				};
-			}
-			return {
-				entry: entry,
-				can_tween: il > 1,
-				keyframe: true // il > 1
-			};
-		}
-		if (t < entry.startTime) {
-			return {
-				entry: prev_entry,
-				can_tween: true,
-				keyframe: false
-			};
-		}
-	}
-	return {
-		can_tween: false,
-		keyframe: false
-	};
-}
-
 export const firstDefined = function(...args: any[]) {
   for (let i = 0; i < args.length; i++) {
     if (typeof arguments[i] !== 'undefined') {
@@ -151,15 +100,20 @@ export const firstDefined = function(...args: any[]) {
   return undefined
 }
 
-export const calculateDuration = (layers: ILayer[]) => {
+export const calculateDuration = (layers: ILayer[], data: DataStore) => {
   let max: number = 0
+  const layerMaxs = []
   for (let i = 0; i < layers.length; i++) {
     const times = layers[i].timeStamps
+    let layerMax = Number.MIN_VALUE
     for (let j = 0; j < times.length; j++) {
       const time = times[j]
       const end = time.startTime + time.duration
+      layerMax = layerMax > end ? layerMax : end
       max = max > end ? max : end
     }
+    layerMaxs.push(layerMax)
   }
-  return max
+  data.setValue('ui:maxEnd', max)
+  data.setValue('ui:layerMax', layerMaxs)
 }

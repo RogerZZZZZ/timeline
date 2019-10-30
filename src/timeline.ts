@@ -5,7 +5,7 @@ import TimelinePanel from './paint/panel'
 import LayerPanel from './paint/layerCanbinet'
 import ScrollBar from './paint/ui_scrollbar'
 import Settings from './default'
-import { findTimeInLayer, style, timeAtLayer, calculateDuration } from './lib/utils'
+import { findTimeInLayer, style, calculateDuration } from './lib/utils'
 import Theme from './theme'
 
 const header_styles = {
@@ -20,7 +20,6 @@ const header_styles = {
 export class LayerProp implements ILayer {
   public name: string
   public timeStamps: any = []
-  public _value = 0
   public _color: string
   public _mute: boolean = false
 
@@ -116,7 +115,7 @@ export default class TimeLine {
     //   }
     // })
 
-    this.data.setValue('ui:maxEnd', calculateDuration(config.data.layers))
+    calculateDuration(config.data.layers, this.data)
     this.paint()
     this.updateState()
 
@@ -184,7 +183,18 @@ export default class TimeLine {
 
     dispatcher.on('action:mute', (layer: any, mute: boolean) => {
       layer._mute = mute;
-    }, this);
+    }, this)
+
+    dispatcher.on('action:finish', (currentTime: number) => {
+      const layerMax = this.data.get('ui:layerMax').value
+      for (let i = 0; i < layerMax.length; i++) {
+        if (currentTime >= layerMax[i]) {
+          this.layers[i]._finish = true
+        } else {
+          this.layers[i]._finish = false
+        }
+      }
+    }, this)
 
     dispatcher.on('controls.toggle_play', () => {
       if (this.isPlaying) {
@@ -226,8 +236,10 @@ export default class TimeLine {
   }
 
   public setCurrentTime(value: number) {
-    this.data.get('ui:currentTime').value = Math.max(0, value)
+    this.data.get('ui:currentTime').value =
+      Math.min(Math.max(0, value), this.data.get('ui:maxEnd').value)
 
+    this.dispatcher.fire('action:finish', value)
     if (this.isPlaying) {
       this.startPlay = performance.now() - value * 1000
     }
@@ -321,22 +333,5 @@ export default class TimeLine {
 
   public setTarget(t: any) {
     this.timelinePanel = t
-  }
-
-  public getValueRange(ranges: number, interval: number) {
-    const i = interval || 0.15
-    const r = ranges || 2
-    const t = this.data.get('ui:currentTime').value
-    const values = []
-    for (let u = -r; u <= r; u++) {
-      const o = {}
-      for (let j = 0; j < this.layers.length; j++) {
-        const layer = this.layers[j]
-        const m: any = timeAtLayer(layer, t + u * i)
-        o[layer.name] = m.value
-      }
-      values.push(o)
-    }
-    return values
   }
 }

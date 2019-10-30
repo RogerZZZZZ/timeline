@@ -21,6 +21,7 @@ export interface ILayer {
   timeStamps: ITimeStamp[]
   _color?: string
   _mute?: boolean
+  _finish?: boolean
 }
 
 export interface ICanvas {

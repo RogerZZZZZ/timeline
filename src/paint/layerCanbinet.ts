@@ -21,7 +21,6 @@ export default class LayerCabinet {
   private rangeInput: HTMLInputElement
   private playing = false
   private draggingRange = 0
-  private currentTimeStore: any
   private playButton: UIButton
   private stopButton: UIButton
   private layerStore: any
@@ -92,8 +91,6 @@ export default class LayerCabinet {
       this.rangeUpdate()
     })
 
-    this.currentTimeStore = this.data.get('ui:currentTime')
-
     this.containerDiv.appendChild(this.topDiv)
     this.topDiv.appendChild(this.playButton.dom)
     this.topDiv.appendChild(this.stopButton.dom)
@@ -108,7 +105,6 @@ export default class LayerCabinet {
   }
 
   public repaint() {
-    const s = this.currentTimeStore.value
     const layers = this.layerStore.value
 
     for (let i = this.layerUis.length; i-- > 0;) {
@@ -118,9 +114,7 @@ export default class LayerCabinet {
         if (popLayer) this.unusedLayer.push(popLayer)
         continue
       }
-
       this.layerUis[i].setState(this.layerStore.get(i))
-      this.layerUis[i].repaint(s)
     }
   }
 
