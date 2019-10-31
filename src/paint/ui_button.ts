@@ -175,7 +175,7 @@ export default class IconButton {
     this.ctx.beginPath()
 
     for (var i = 0, il = commands.length; i < il; i++) {
-			var cmds = commands[i].split(',');
+      var cmds = commands[i].split(',');
 			var params = cmds.slice(1);
 
 			this.ctx[this.CMD_MAP[cmds[0]]].apply(this.ctx, params);

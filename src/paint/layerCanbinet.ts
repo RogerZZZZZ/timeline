@@ -133,7 +133,6 @@ export default class LayerCabinet {
     this.layerStore = state
     const layers = this.layerStore.value
     for (let i = 0; i < layers.length; i++) {
-      const layer = layers[i]
       if (!this.layerUis[i]) {
         if (this.unusedLayer.length) {
           const layerUi = this.unusedLayer.pop()
@@ -142,7 +141,7 @@ export default class LayerCabinet {
             this.layerUis.push(layerUi)
           }
         } else {
-          const layerUi = new Layer(layer, this.dispatcher)
+          const layerUi = new Layer()
           this.layerScrollDiv.appendChild(layerUi.dom)
           this.layerUis.push(layerUi)
         }
