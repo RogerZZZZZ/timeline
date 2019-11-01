@@ -59,6 +59,7 @@ export default class TimeLine {
     this.data = new DataStore()
     this.dispatcher = this.initDispatcher()
     this.loadData(config.data)
+    calculateDuration(config.data.layers, this.data)
 
     this.timelinePanel = new TimelinePanel(this.data, this.dispatcher)
     this.layerPanel = new LayerPanel(this.data, this.dispatcher)
@@ -115,11 +116,18 @@ export default class TimeLine {
     //   }
     // })
 
-    calculateDuration(config.data.layers, this.data)
     this.paint()
     this.updateState()
 
     hostContainer.appendChild(this.paneDiv)
+  }
+
+  public addLayer(layer: ILayer) {
+    this.layers.push(layer)
+    this.data.get('layers').value = this.layers
+    calculateDuration(this.layers, this.data)
+    this.updateState()
+    this.layerPanel.rangeUpdate()
   }
 
   private loadData(data: any) {
@@ -228,7 +236,9 @@ export default class TimeLine {
     }, this)
 
     dispatcher.on('update.scale', (v: any) => {
-      this.data.get('ui:timeScale').value = v * Settings.time_scale;
+      const maxEnd = this.data.get('ui:maxEnd').value
+      const timeScale = 60 * (10 / maxEnd)
+      this.data.get('ui:timeScale').value = v * timeScale;
       this.timelinePanel.repaint();
     }, this);
 
@@ -306,12 +316,6 @@ export default class TimeLine {
     right.style.position = 'absolute'
     right.style.top = '0px'
     right.style.left = Settings.LEFT_PANE_WIDTH + 'px'
-  }
-
-  public addLayer(name: string) {
-    const layer = new LayerProp(name)
-    this.layers.push(layer)
-    this.layerPanel.setState(this.data.get('layers'))
   }
 
   public resize(width: number, height: number) {

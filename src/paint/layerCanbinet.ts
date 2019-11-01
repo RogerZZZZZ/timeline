@@ -149,7 +149,7 @@ export default class LayerCabinet {
     }
   }
 
-  private rangeUpdate() {
+  public rangeUpdate() {
     if (Number(this.rangeInput.value) > 0.9) {
       this.dispatcher.fire('update.scale', Number(this.rangeInput.value) / 10)
     }
