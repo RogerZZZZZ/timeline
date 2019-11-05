@@ -13,5 +13,5 @@ const ctrPersistConfig = {
 }
 
 export default combineReducers({
-  auth: persistReducer(ctrPersistConfig, ctrReducer),
+  ctr: persistReducer(ctrPersistConfig, ctrReducer),
 })

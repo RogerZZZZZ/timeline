@@ -1,21 +1,3 @@
-import * as React from 'react'
-import injectStyle from 'react-jss'
-import { Layer, Rect } from 'react-konva'
-import Settings from '../default'
-
-interface IProps {
-  classes: any
-}
-
-const ProgressScroller = (props: IProps) => {
-  return (
-    <div>1</div>
-  )
-}
-
-export default injectStyle({
-
-})(ProgressScroller)
 import DataStore from '../lib/dataStore'
 import Dispatcher from '../lib/dispatcher'
 import Settings from '../default'

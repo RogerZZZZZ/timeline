@@ -9,13 +9,17 @@ type CtrAction = ActionType<typeof actions>
 export interface ICtrState {
   currentTime: number
   scale: number
+  scrollTime: number
+  totalTime: number
 }
 
 const reducersUtils: ReducersUtils<CtrAction, ICtrState> = new ReducersUtils()
 
 export const defaultState: ICtrState = {
   currentTime: 0,
-  scale: Settings.time_scale
+  scale: Settings.time_scale,
+  scrollTime: 0,
+  totalTime: 0,
 }
 
 export default reducersUtils.createReducers(defaultState, {
@@ -29,6 +33,18 @@ export default reducersUtils.createReducers(defaultState, {
     state.currentTime = payload
     return {
       ...state,
+    }
+  },
+  [CtrCons.SCROLL_TIME_SET]: (state: ICtrState, payload: any) => {
+    state.scrollTime = payload
+    return {
+      ...state
+    }
+  },
+  [CtrCons.TOTAL_TIME_SET]: (state: ICtrState, payload: any) => {
+    state.totalTime = payload
+    return {
+      ...state
     }
   }
 })

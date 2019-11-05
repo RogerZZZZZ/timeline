@@ -3,11 +3,14 @@
  */
 
 import * as React from 'react'
-// import styles from './styles.css'
 import Timeline from './timeline'
 import { IRawData, ILayer } from './IInterface'
+import { PersistGate } from 'redux-persist/integration/react'
+import { StoreContext } from 'redux-react-hook'
+import reduxPersist from './redux-persist'
 
 import 'antd/dist/antd.css'
+// import styles from './styles.css'
 
 export type Props = { text: string }
 
@@ -38,6 +41,9 @@ const newData: ILayer = {
   }],
 }
 
+const store = reduxPersist.getStore()
+const persistor = reduxPersist.getPersistor()
+
 export default class ExampleComponent extends React.Component<Props> {
   private timeline: Timeline
 
@@ -60,8 +66,12 @@ export default class ExampleComponent extends React.Component<Props> {
   render() {
     return (
       <div>
-        <div id='timeline' />
-        <button onClick={this.handleAddAction}>add new layer</button>
+        <StoreContext.Provider value={store}>
+          <PersistGate persistor={persistor}>
+            <div id='timeline' />
+            <button onClick={this.handleAddAction}>add new layer</button>
+          </PersistGate>
+        </StoreContext.Provider>
       </div>
     )
   }
