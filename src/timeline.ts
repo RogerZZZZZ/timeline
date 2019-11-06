@@ -17,18 +17,6 @@ const header_styles = {
   overflow: 'hidden'
 };
 
-export class LayerProp implements ILayer {
-  public name: string
-  public timeStamps: any = []
-  public _color: string
-  public _mute: boolean = false
-
-  constructor(name: string) {
-    this.name = name
-    this._color = `#${(Math.random() * 0xffffff | 0 ).toString(16)}`
-  }
-}
-
 interface ITimelineConfig {
   containerId: string
   data: IRawData
@@ -43,7 +31,7 @@ export default class TimeLine {
   private startPlay: number | null
   private isPlaying: boolean = false
   private playedFrom: number
-  private needResize = true
+  // private needResize = true
   private containerDiv: HTMLDivElement
   private layerPanel: LayerPanel
   private paneDiv: HTMLDivElement
@@ -184,15 +172,6 @@ export default class TimeLine {
       this.repaintAll()
     }, this)
 
-    dispatcher.on('action:solo', (layer: any, solo: any) => {
-      layer._solo = solo;
-      console.log(layer, solo);
-    }, this)
-
-    dispatcher.on('action:mute', (layer: any, mute: boolean) => {
-      layer._mute = mute;
-    }, this)
-
     dispatcher.on('action:finish', (currentTime: number) => {
       const layerMax = this.data.get('ui:layerMax').value
       for (let i = 0; i < layerMax.length; i++) {
@@ -292,48 +271,48 @@ export default class TimeLine {
       this.setCurrentTime(t)
     }
 
-    if (this.needResize) {
-      this.containerDiv.style.width = Settings.width + 'px'
-      this.containerDiv.style.height = Settings.height + 'px'
+    // if (this.needResize) {
+    //   this.containerDiv.style.width = Settings.width + 'px'
+    //   this.containerDiv.style.height = Settings.height + 'px'
 
-      this.restyle(this.layerPanel.dom, this.timelinePanel.dom)
+    //   this.restyle(this.layerPanel.dom, this.timelinePanel.dom)
 
-      this.timelinePanel.resize()
-      this.repaintAll()
-      this.needResize = false
-      this.dispatcher.fire('resize')
-    }
+    //   this.timelinePanel.resize()
+    //   this.repaintAll()
+    //   this.needResize = false
+    //   this.dispatcher.fire('resize')
+    // }
 
     this.timelinePanel.paint()
   }
 
-  public restyle(left: HTMLElement, right: HTMLElement) {
-    left.style.cssText = 'position: absolute; left: 0px; top: 0px; height: ' + Settings.height + 'px;'
-    style(left, {
-      overflow: 'hidden'
-    })
-    left.style.width = Settings.LEFT_PANE_WIDTH + 'px'
-    right.style.position = 'absolute'
-    right.style.top = '0px'
-    right.style.left = Settings.LEFT_PANE_WIDTH + 'px'
-  }
+  // public restyle(left: HTMLElement, right: HTMLElement) {
+  //   left.style.cssText = 'position: absolute; left: 0px; top: 0px; height: ' + Settings.height + 'px;'
+  //   style(left, {
+  //     overflow: 'hidden'
+  //   })
+  //   left.style.width = Settings.LEFT_PANE_WIDTH + 'px'
+  //   right.style.position = 'absolute'
+  //   right.style.top = '0px'
+  //   right.style.left = Settings.LEFT_PANE_WIDTH + 'px'
+  // }
 
-  public resize(width: number, height: number) {
-    const w = width - 4
-    const h = height - 44
+  // public resize(width: number, height: number) {
+  //   const w = width - 4
+  //   const h = height - 44
 
-    Settings.width = w - Settings.LEFT_PANE_WIDTH
-    Settings.height = h
+  //   Settings.width = w - Settings.LEFT_PANE_WIDTH
+  //   Settings.height = h
 
-    Settings.TIMELINE_SCROLL_HEIGHT = h - Settings.MARKER_TRACK_HEIGHT
-    const scrollableHeight = Settings.TIMELINE_SCROLL_HEIGHT
-    this.scrollBar.setHeight(scrollableHeight - 2)
+  //   Settings.TIMELINE_SCROLL_HEIGHT = h - Settings.MARKER_TRACK_HEIGHT
+  //   const scrollableHeight = Settings.TIMELINE_SCROLL_HEIGHT
+  //   this.scrollBar.setHeight(scrollableHeight - 2)
 
-    style(this.scrollBar.dom, {
-      top: Settings.MARKER_TRACK_HEIGHT + 'px',
-      left: (w - 16) + 'px'
-    })
-  }
+  //   style(this.scrollBar.dom, {
+  //     top: Settings.MARKER_TRACK_HEIGHT + 'px',
+  //     left: (w - 16) + 'px'
+  //   })
+  // }
 
   public setTarget(t: any) {
     this.timelinePanel = t

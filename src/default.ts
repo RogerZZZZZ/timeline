@@ -1,3 +1,9 @@
+export enum TIMELINE_STATUS {
+  STOP = -1,
+  PAUSE = 0,
+  PLAYING = 1,
+}
+
 export default {
   LINE_HEIGHT: 26,
 	DIAMOND_SIZE: 10,

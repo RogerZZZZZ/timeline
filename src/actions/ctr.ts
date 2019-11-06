@@ -16,3 +16,15 @@ export const scrollTimeSet = createAction<string, any>(CtrCons.SCROLL_TIME_SET, 
 export const totalTImeSet = createAction<string, any>(CtrCons.TOTAL_TIME_SET, resolve => {
   return (payload: any) => resolve(payload)
 })
+
+export const timelineStatusSet = createAction<string, any>(CtrCons.TIMELINE_STATUS_SET, resolve => {
+  return (payload: any) => resolve(payload)
+})
+
+export const layersSet = createAction<string, any>(CtrCons.LAYERS_SET, resolve => {
+  return (payload: any) => resolve(payload)
+})
+
+export const endsSet = createAction<string, any>(CtrCons.END_SET, resolve => {
+  return (payload: any) => resolve(payload)
+})
