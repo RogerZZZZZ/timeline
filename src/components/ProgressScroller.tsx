@@ -1,6 +1,6 @@
 import * as React from 'react'
 import injectStyle from 'react-jss'
-import { Layer, Rect } from 'react-konva'
+import { Stage, Layer, Rect } from 'react-konva'
 import { useMappedState, useDispatch } from 'redux-react-hook'
 import { ctrState } from '../reducers/state'
 import { KonvaEventObject } from 'konva/types/Node'
@@ -65,23 +65,25 @@ const ProgressScroller = (props: IProps) => {
   }
 
   return (
-    <Layer>
-      <Rect
-        x={0}
-        y={0}
-        width={width}
-        height={height}
-      />
-      <Rect
-        x={scrollLeft}
-        y={0}
-        width={gripLen}
-        height={16}
-        onMouseMove={onMove}
-        onMouseDown={onDown}
-        onMouseUp={onUp}
-      />
-    </Layer>
+    <Stage>
+      <Layer>
+        <Rect
+          x={0}
+          y={0}
+          width={width}
+          height={height}
+        />
+        <Rect
+          x={scrollLeft}
+          y={0}
+          width={gripLen}
+          height={16}
+          onMouseMove={onMove}
+          onMouseDown={onDown}
+          onMouseUp={onUp}
+        />
+      </Layer>
+    </Stage>
   )
 }
 
