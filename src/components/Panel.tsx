@@ -1,6 +1,6 @@
 import * as React from 'react'
 import injectStyle from 'react-jss'
-import { Stage, Layer, Rect, Line } from 'react-konva/lib/ReactKonvaCore'
+import { Stage, Layer, Rect, Line } from 'react-konva'
 import Settings from '../default'
 import Theme from '../theme'
 import { useMappedState, useDispatch } from 'redux-react-hook'
@@ -30,6 +30,7 @@ const Panel = ({ classes }: IProps) => {
   // let scrollHeight = Settings.height - TIME_SCROLLER_HEIGHT
 
   React.useEffect(() => {
+    console.log('scale', scale)
     if (timeScale !== scale) {
       timeScale = scale
       setTickMark(timeScale)
@@ -133,14 +134,15 @@ const Panel = ({ classes }: IProps) => {
   // }
 
   return (
-    <div>
-      <Stage className={classes.panelCanvas}
+    <div style={{
+      width: Settings.width * dpr,
+      height: (Settings.height - TIME_SCROLLER_HEIGHT) * dpr,
+    }}>
+      <Stage
         onMouseMove={setCurrentTime}
         onMouseUp={setCurrentTime}
-        style={{
-          width: Settings.width * dpr,
-          height: (Settings.height - TIME_SCROLLER_HEIGHT) * dpr,
-        }}
+        width={Settings.width * dpr}
+        height={(Settings.height - TIME_SCROLLER_HEIGHT) * dpr}
         scale={{
           x: scale,
           y: scale,
@@ -148,6 +150,14 @@ const Panel = ({ classes }: IProps) => {
         fill={Theme.a}
       >
         <Layer>
+          <Rect
+            x={20}
+            y={50}
+            width={100}
+            height={100}
+            fill="red"
+            shadowBlur={10}
+          />
           {renderLayerLine()}
           {renderFrames()}
           {renderPoints()}

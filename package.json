@@ -27,9 +27,9 @@
     "@types/node": "^12.12.6",
     "@types/react": "^16.9.11",
     "@types/react-dom": "^16.9.4",
+    "@types/react-jss": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^2.2.0",
     "@typescript-eslint/parser": "^2.2.0",
-    "@types/react-jss": "^10.0.0",
     "babel-eslint": "10.0.3",
     "babel-jest": "^24.9.0",
     "babel-loader": "8.0.6",
@@ -152,6 +152,8 @@
     ]
   },
   "dependencies": {
+    "@types/antd": "^1.0.0",
+    "antd": "^3.25.0",
     "konva": "^4.0.16",
     "react-jss": "^10.0.0",
     "react-konva": "^16.10.1-0",

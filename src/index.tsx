@@ -5,6 +5,8 @@ import { PersistGate } from 'redux-persist/integration/react'
 import { StoreContext } from 'redux-react-hook'
 import reduxPersist from './redux-persist'
 
+import 'antd/dist/antd.css'
+
 const store = reduxPersist.getStore()
 const persistor = reduxPersist.getPersistor()
 
