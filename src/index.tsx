@@ -3,8 +3,9 @@
  */
 
 import * as React from 'react'
-import Timeline from './timeline'
-import { IRawData, ILayer } from './IInterface'
+// import Timeline from './timeline'
+import Timeline from './App'
+import { IRawData } from './IInterface'
 import { PersistGate } from 'redux-persist/integration/react'
 import { StoreContext } from 'redux-react-hook'
 import reduxPersist from './redux-persist'
@@ -33,43 +34,44 @@ const data: IRawData = {
   }]
 }
 
-const newData: ILayer = {
-  name: 'new layer',
-  timeStamps: [{
-    startTime: 4,
-    duration: 5,
-  }],
-}
+// const newData: ILayer = {
+//   name: 'new layer',
+//   timeStamps: [{
+//     startTime: 4,
+//     duration: 5,
+//   }],
+// }
 
 const store = reduxPersist.getStore()
 const persistor = reduxPersist.getPersistor()
 
 export default class ExampleComponent extends React.Component<Props> {
-  private timeline: Timeline
+  // private timeline: Timeline
 
   constructor(props: Props) {
     super(props)
-    this.handleAddAction = this.handleAddAction.bind(this)
+    // this.handleAddAction = this.handleAddAction.bind(this)
   }
 
-  componentDidMount() {
-    this.timeline = new Timeline({
-      containerId: 'timeline',
-      data,
-    })
-  }
+  // componentDidMount() {
+  //   this.timeline = new Timeline({
+  //     containerId: 'timeline',
+  //     data,
+  //   })
+  // }
 
-  handleAddAction() {
-    this.timeline.addLayer(newData)
-  }
+  // handleAddAction() {
+  //   this.timeline.addLayer(newData)
+  // }
 
   render() {
     return (
       <div>
         <StoreContext.Provider value={store}>
           <PersistGate persistor={persistor}>
-            <div id='timeline' />
-            <button onClick={this.handleAddAction}>add new layer</button>
+            {/* <div id='timeline' /> */}
+            <Timeline data={data} />
+            {/* <button onClick={this.handleAddAction}>add new layer</button> */}
           </PersistGate>
         </StoreContext.Provider>
       </div>

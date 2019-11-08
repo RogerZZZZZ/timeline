@@ -1,6 +1,6 @@
 import * as React from 'react'
 import injectStyle from 'react-jss'
-import { Stage, Layer, Rect, Line } from 'react-konva'
+import { Stage, Layer, Rect, Line } from 'react-konva/lib/ReactKonvaCore'
 import Settings from '../default'
 import Theme from '../theme'
 import { useMappedState, useDispatch } from 'redux-react-hook'
@@ -21,13 +21,13 @@ const LEFT_GUTTER = 20
 const Panel = ({ classes }: IProps) => {
   const dispatch = useDispatch()
   const dpr = window.devicePixelRatio
-  const { layers, currentTime, scrollTime, scale } = useMappedState(ctrState)
+  const { layers, scrollTime, scale } = useMappedState(ctrState)
   const [tickMark, setTickMark] = React.useState(Settings.time_scale / 60)
   const [frameRects, setFrameRects] = React.useState([] as any[])
   const [timePoints, setTimePoints] = React.useState([] as any[])
 
   let timeScale = Settings.time_scale
-  let scrollHeight = Settings.height - TIME_SCROLLER_HEIGHT
+  // let scrollHeight = Settings.height - TIME_SCROLLER_HEIGHT
 
   React.useEffect(() => {
     if (timeScale !== scale) {
@@ -122,6 +122,15 @@ const Panel = ({ classes }: IProps) => {
       )
     })
   }
+
+  // const renderRuler = () => {
+  //   let units = scale / tickMark
+  //   const offsetUnits = (scrollTime * scale) & units
+  //   const count = (Settings.width - LEFT_GUTTER + offsetUnits) / units
+  //   for (let i = 0; i < count; i++) {
+
+  //   }
+  // }
 
   return (
     <div>

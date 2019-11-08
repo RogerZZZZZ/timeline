@@ -1,9 +1,9 @@
 import * as React from 'react'
-import { ILayer, IRawData } from './IInterface'
+import { IRawData } from './IInterface'
 import injectStyle from 'react-jss'
-import { Stage, Layer } from 'react-konva'
+// import { Stage, Layer } from 'react-konva'
 import { ctrState } from './reducers/state'
-import Settings, { TIMELINE_STATUS } from './default'
+import { TIMELINE_STATUS } from './default'
 import { useMappedState, useDispatch } from 'redux-react-hook'
 import { CtrCons } from './actions'
 import Theme from './theme'
@@ -15,7 +15,7 @@ interface IProps {
   data: IRawData,
 }
 
-const Timeline = ({ classes }: IProps) => {
+const Timeline = ({ classes, data }: IProps) => {
   const dispatch = useDispatch()
   let isPlaying = false
   let startPlay: any = null
@@ -28,6 +28,10 @@ const Timeline = ({ classes }: IProps) => {
       pausePlaying()
     }
   }, [timelineStatus])
+
+  React.useEffect(() => {
+    initData(data)
+  }, [])
 
   const initData = (data: IRawData) => {
     dispatch({
