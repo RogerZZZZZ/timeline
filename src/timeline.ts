@@ -91,18 +91,6 @@ export default class TimeLine {
 
     this.containerDiv.appendChild(this.layerPanel.dom)
     this.containerDiv.appendChild(this.timelinePanel.dom)
-    // this.containerDiv.appendChild(this.scrollBar.dom)
-
-    // this.scrollBar.onScrollEvents.push((type: string, scrollTo: number) => {
-    //   switch(type) {
-    //     case 'scrollto':
-    //       this.layerPanel.scrollTo(scrollTo)
-    //       this.timelinePanel.scrollTo(scrollTo)
-    //       break;
-    //     default:
-    //       break;
-    //   }
-    // })
 
     this.paint()
     this.updateState()

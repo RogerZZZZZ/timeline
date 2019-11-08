@@ -60,7 +60,7 @@ export default class DataStore {
     for (let i = 0, il = path.length; i < il; i++) {
       const tmpPath = path[i]
       if (ref[tmpPath] === undefined) {
-        return
+        return null
       }
       ref = ref[tmpPath]
     }

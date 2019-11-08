@@ -59,6 +59,8 @@ const Timeline = ({ classes, data }: IProps) => {
         layerMax: layerMaxs,
       }
     })
+
+    paint()
   }
 
   const setCurrentTime = (time: number) => {

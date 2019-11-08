@@ -1,9 +1,9 @@
 import * as React from 'react'
 import injectStyle from 'react-jss'
 import Settings, { TIMELINE_STATUS } from '../default'
-import { Button, Slider } from 'antd'
+// import { Button, Slider } from 'antd'
 import { useMappedState, useDispatch } from 'redux-react-hook'
-import { SliderValue } from 'antd/lib/slider'
+// import { SliderValue } from 'antd/lib/slider'
 import { CtrCons } from '../actions'
 import { ctrState } from '../reducers/state'
 
@@ -17,15 +17,15 @@ const ActionBar = ({ classes }: IProps) => {
   const defaultScale = 9
 
   React.useEffect(() => {
-    scaleChange(defaultScale)
+    // scaleChange(defaultScale)
   }, [])
 
-  const scaleChange = (value: SliderValue) => {
-    dispatch({
-      type: CtrCons.SCALE_SET,
-      payload: value
-    })
-  }
+  // const scaleChange = (value: any) => {
+  //   dispatch({
+  //     type: CtrCons.SCALE_SET,
+  //     payload: value
+  //   })
+  // }
 
   const togglePlay = () => {
     if (timelineStatus === TIMELINE_STATUS.PLAYING) {
@@ -46,11 +46,11 @@ const ActionBar = ({ classes }: IProps) => {
     })
   }
 
-  const playIcon = () => {
-    return timelineStatus === TIMELINE_STATUS.PLAYING
-      ? 'play'
-      : 'pause'
-  }
+  // const playIcon = () => {
+  //   return timelineStatus === TIMELINE_STATUS.PLAYING
+  //     ? 'play'
+  //     : 'pause'
+  // }
 
   return (
     <div className={classes.container}>
@@ -59,7 +59,9 @@ const ActionBar = ({ classes }: IProps) => {
       </div>
 
       <div className={classes.topDivStyle}>
-        <Button icon={playIcon()} onClick={togglePlay} />
+        <button onClick={togglePlay}>play</button>
+        <button onClick={stopPlaying}>stop</button>
+        {/* <Button icon={playIcon()} onClick={togglePlay} />
         <Button icon='stop' onClick={stopPlaying} />
         <Slider
           className={classes.rangeInput}
@@ -67,7 +69,7 @@ const ActionBar = ({ classes }: IProps) => {
           max={15}
           min={3}
           step={1}
-          onChange={(value: SliderValue) => scaleChange(value)}/>
+          onChange={(value: SliderValue) => scaleChange(value)}/> */}
       </div>
     </div>
   )

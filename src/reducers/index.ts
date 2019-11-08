@@ -13,5 +13,5 @@ const ctrPersistConfig = {
 }
 
 export default combineReducers({
-  ctr: persistReducer(ctrPersistConfig, ctrReducer),
+  ctr: persistReducer<ICtrState, any>(ctrPersistConfig, ctrReducer),
 })
