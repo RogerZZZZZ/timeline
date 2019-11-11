@@ -24,7 +24,7 @@ export const defaultState: ICtrState = {
   currentTime: 0,
   scale: Settings.time_scale,
   scrollTime: 0,
-  totalTime: 0,
+  totalTime: Settings.default_length,
   timelineStatus: TIMELINE_STATUS.STOP,
   layers: [],
   maxEnd: Number.MIN_VALUE,
@@ -73,6 +73,11 @@ export default reducersUtils.createReducers(defaultState, {
     state.layerMax = payload.layerMax
     return {
       ...state,
+    }
+  },
+  [CtrCons.DATA_INIT]: (_state: ICtrState, payload: ICtrState) => {
+    return {
+      ...payload,
     }
   },
 })

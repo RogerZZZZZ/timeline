@@ -28,3 +28,7 @@ export const layersSet = createAction<string, any>(CtrCons.LAYERS_SET, resolve =
 export const endsSet = createAction<string, any>(CtrCons.END_SET, resolve => {
   return (payload: any) => resolve(payload)
 })
+
+export const dataInit = createAction<string, any>(CtrCons.DATA_INIT, resolve => {
+  return (payload: any) => resolve(payload)
+})

@@ -2,6 +2,7 @@ import * as React from 'react'
 import injectStyle from 'react-jss'
 import { Shape } from 'react-konva'
 import Settings from '../default'
+import Theme from '../theme'
 
 interface IProps {
   x: number
@@ -24,6 +25,7 @@ const UITimePoint = (props: IProps) => {
         ctx.closePath()
         ctx.fillStrokeShape(shape)
       }}
+      fill={Theme.c}
     />
   )
 }

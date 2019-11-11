@@ -32,10 +32,6 @@ const data: IRawData = {
 }
 
 export default class ExampleComponent extends React.Component<Props> {
-  constructor(props: Props) {
-    super(props)
-  }
-
   render() {
     return (
       <div>

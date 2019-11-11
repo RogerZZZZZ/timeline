@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { IRawData } from './IInterface'
 import injectStyle from 'react-jss'
-// import { Stage, Layer } from 'react-konva'
 import { ctrState } from './reducers/state'
 import { TIMELINE_STATUS } from './default'
 import { useMappedState, useDispatch } from 'redux-react-hook'
@@ -9,6 +8,7 @@ import { CtrCons } from './actions'
 import Theme from './theme'
 import ActionBar from './components/ActionBar'
 import Panel from './components/Panel'
+import { defaultState } from './reducers/ctr'
 
 interface IProps {
   classes: any,
@@ -22,6 +22,13 @@ const Timeline = ({ classes, data }: IProps) => {
   const { maxEnd, currentTime, timelineStatus } = useMappedState(ctrState)
 
   React.useEffect(() => {
+    dispatch({
+      type: CtrCons.DATA_INIT,
+      payload: defaultState,
+    })
+  }, [])
+
+  React.useEffect(() => {
     if (timelineStatus === TIMELINE_STATUS.PLAYING) {
       startPlaying()
     } else if (timelineStatus === TIMELINE_STATUS.PAUSE) {
@@ -31,7 +38,7 @@ const Timeline = ({ classes, data }: IProps) => {
 
   React.useEffect(() => {
     initData(data)
-  }, [])
+  }, [data])
 
   const initData = (data: IRawData) => {
     dispatch({

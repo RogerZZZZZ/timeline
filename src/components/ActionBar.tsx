@@ -13,7 +13,7 @@ interface IProps {
 
 const ActionBar = ({ classes }: IProps) => {
   const dispatch = useDispatch()
-  const { timelineStatus } = useMappedState(ctrState)
+  const { timelineStatus, maxEnd } = useMappedState(ctrState)
   const defaultScale = 9
 
   React.useEffect(() => {
@@ -21,9 +21,10 @@ const ActionBar = ({ classes }: IProps) => {
   }, [])
 
   const scaleChange = (value: any) => {
+    const timeScale = 60 * (10 / maxEnd)
     dispatch({
       type: CtrCons.SCALE_SET,
-      payload: value
+      payload: value * timeScale / 10
     })
   }
 

@@ -9,6 +9,7 @@ import ProgressScroller from './ProgressScroller'
 import TimePoint from './TimePoint'
 import { ILayer } from '../IInterface'
 import { KonvaEventObject } from 'konva/types/Node'
+import Konva from 'konva'
 import { CtrCons } from '../actions'
 
 interface IProps {
@@ -23,58 +24,54 @@ const Panel = ({ classes }: IProps) => {
   const dpr = window.devicePixelRatio
   const { layers, scrollTime, scale } = useMappedState(ctrState)
   const [tickMark, setTickMark] = React.useState(Settings.time_scale / 60)
-  const [frameRects, setFrameRects] = React.useState([] as any[])
-  const [timePoints, setTimePoints] = React.useState([] as any[])
-
-  let timeScale = Settings.time_scale
-  // let scrollHeight = Settings.height - TIME_SCROLLER_HEIGHT
+  let [frameRects, setFrameRects] = React.useState([] as any[])
+  let [timePoints, setTimePoints] = React.useState([] as any[])
+  let scrollHeight = Settings.height - TIME_SCROLLER_HEIGHT
 
   React.useEffect(() => {
-    console.log('scale', scale)
-    if (timeScale !== scale) {
-      timeScale = scale
-      setTickMark(timeScale)
-    }
+    console.log(scale)
+    setTickMark(scale)
   }, [scale])
 
   React.useEffect(() => {
+    frameRects = []
+    timePoints = []
     for (let i = 0; i < layers.length; i++) {
       const layer = layers[i]
       const values = layer.timeStamps
       const y = i * Settings.LINE_HEIGHT
-
       for (let j = 0; j < values.length; j++) {
         const frame = values[j]
-        const x = timeToX(frame.startTime)
+        const x1 = timeToX(frame.startTime)
         const x2 = timeToX(frame.startTime + frame.duration)
         const y1 = y + 2
         const y2 = y + Settings.LINE_HEIGHT - 2
 
         frameRects.push({
-          x,
+          x: x1,
           y: y1,
-          width: x2 - x,
+          width: x2 - x1,
           height: y2 - y1,
         })
 
         timePoints.push({
-          x,
+          x: x1,
           y,
         })
       }
     }
     setFrameRects(frameRects)
     setTimePoints(timePoints)
-  }, [layers])
+  }, [layers, tickMark])
 
   const xToTime = (x: number) => {
-    const units = timeScale / tickMark * 10
-    return scrollTime + ((x - LEFT_GUTTER) / units | 0) / tickMark * 10
+    const units = scale / (tickMark * 10)
+    return scrollTime + ((x - LEFT_GUTTER) / units | 0) / (tickMark * 10)
   }
 
   const timeToX = (s: number) => {
     let ds = s - scrollTime
-    ds *= timeScale
+    ds *= scale
     ds += LEFT_GUTTER
     return ds
   }
@@ -91,10 +88,10 @@ const Panel = ({ classes }: IProps) => {
       const y = ~~(idx * Settings.LINE_HEIGHT) - 0.5
       return (
         <Line
-          x={0}
-          y={y}
           points={[0, y, Settings.width, y]}
           stroke={Theme.b}
+          height={0.1}
+          tension={0.1}
         />
       )
     })
@@ -106,6 +103,7 @@ const Panel = ({ classes }: IProps) => {
         <Rect
           x={frame.x}
           y={frame.y}
+          fill={Konva.Util.getRandomColor()}
           width={frame.width}
           height={frame.height}
         />
@@ -124,14 +122,14 @@ const Panel = ({ classes }: IProps) => {
     })
   }
 
-  // const renderRuler = () => {
-  //   let units = scale / tickMark
-  //   const offsetUnits = (scrollTime * scale) & units
-  //   const count = (Settings.width - LEFT_GUTTER + offsetUnits) / units
-  //   for (let i = 0; i < count; i++) {
+  const renderRuler = () => {
+    let units = scale / tickMark
+    const offsetUnits = (scrollTime * scale) & units
+    const count = (Settings.width - LEFT_GUTTER + offsetUnits) / units
+    for (let i = 0; i < count; i++) {
 
-  //   }
-  // }
+    }
+  }
 
   return (
     <div style={{
@@ -143,21 +141,13 @@ const Panel = ({ classes }: IProps) => {
         onMouseUp={setCurrentTime}
         width={Settings.width * dpr}
         height={(Settings.height - TIME_SCROLLER_HEIGHT) * dpr}
-        scale={{
-          x: scale,
-          y: scale,
-        }}
         fill={Theme.a}
       >
-        <Layer>
-          <Rect
-            x={20}
-            y={50}
-            width={100}
-            height={100}
-            fill="red"
-            shadowBlur={10}
-          />
+        <Layer
+          x={0}
+          y={2}
+          width={Settings.width}
+          height={scrollHeight}>
           {renderLayerLine()}
           {renderFrames()}
           {renderPoints()}
