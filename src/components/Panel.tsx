@@ -1,6 +1,6 @@
 import * as React from 'react'
 import injectStyle from 'react-jss'
-import { Stage, Layer, Rect, Line } from 'react-konva'
+import { Stage, Layer, Rect, Line, Text, Group } from 'react-konva'
 import Settings from '../default'
 import Theme from '../theme'
 import { useMappedState, useDispatch } from 'redux-react-hook'
@@ -11,6 +11,7 @@ import { ILayer } from '../IInterface'
 import { KonvaEventObject } from 'konva/types/Node'
 import Konva from 'konva'
 import { CtrCons } from '../actions'
+import { formatTimeRuler } from '../lib/utils'
 
 interface IProps {
   classes: any
@@ -18,10 +19,10 @@ interface IProps {
 
 const TIME_SCROLLER_HEIGHT = 35
 const LEFT_GUTTER = 20
+const MARKER_TRACK_HEIGHT = 25
 
 const Panel = ({ classes }: IProps) => {
   const dispatch = useDispatch()
-  const dpr = window.devicePixelRatio
   const { layers, scrollTime, scale } = useMappedState(ctrState)
   const [tickMark, setTickMark] = React.useState(Settings.time_scale / 60)
   let [frameRects, setFrameRects] = React.useState([] as any[])
@@ -29,8 +30,7 @@ const Panel = ({ classes }: IProps) => {
   let scrollHeight = Settings.height - TIME_SCROLLER_HEIGHT
 
   React.useEffect(() => {
-    console.log(scale)
-    setTickMark(scale)
+    setTickMark(scale / 60)
   }, [scale])
 
   React.useEffect(() => {
@@ -83,21 +83,19 @@ const Panel = ({ classes }: IProps) => {
     })
   }
 
-  const renderLayerLine = () => {
-    return layers.map((_layer: ILayer, idx: number) => {
+  const renderLayerLine = React.useMemo(() => {
+    return Array.from({ length: layers.length + 1 }).map((_val: any, idx: number) => {
       const y = ~~(idx * Settings.LINE_HEIGHT) - 0.5
       return (
         <Line
           points={[0, y, Settings.width, y]}
           stroke={Theme.b}
-          height={0.1}
-          tension={0.1}
         />
       )
     })
-  }
+  }, [layers])
 
-  const renderFrames = () => {
+  const renderFrames = React.useMemo(() => {
     return frameRects.map((frame: any) => {
       return (
         <Rect
@@ -109,9 +107,9 @@ const Panel = ({ classes }: IProps) => {
         />
       )
     })
-  }
+  }, [frameRects])
 
-  const renderPoints = () => {
+  const renderPoints = React.useMemo(() => {
     return timePoints.map((points: any) => {
       return (
         <TimePoint
@@ -120,27 +118,73 @@ const Panel = ({ classes }: IProps) => {
         />
       )
     })
-  }
+  }, [timePoints])
 
-  const renderRuler = () => {
-    let units = scale / tickMark
-    const offsetUnits = (scrollTime * scale) & units
+  const renderRuler = React.useMemo(() => {
+    const units = scale / tickMark
+    const offsetUnits = (scrollTime * scale) % units
     const count = (Settings.width - LEFT_GUTTER + offsetUnits) / units
-    for (let i = 0; i < count; i++) {
+    return Array.from({ length: count }, (v, i) => i).map(idx => {
+      const x = idx * units + LEFT_GUTTER - offsetUnits
+      return (
+        <Group>
+          <Line
+            points={[x, 0, x, Settings.height]}
+            stroke={Theme.c}
+          />
+          <Text
+            x={x}
+            y={0}
+            text={formatTimeRuler(
+              (idx * units - offsetUnits) / scale + scrollTime
+            )}
+            align="center"
+          />
+        </Group>
+      )
+    })
+  }, [tickMark])
 
-    }
-  }
+  const renderLongRulerLine = React.useMemo(() => {
+    const units = scale / (tickMark * 2)
+    const offsetUnits = (scrollTime * scale) % units
+    const count = (Settings.width - LEFT_GUTTER + offsetUnits) / units
+    return Array.from({ length: count }, (v, i) => i).map(idx => {
+      const x = idx * units + LEFT_GUTTER - offsetUnits
+      return (
+        <Line
+          points={[x, MARKER_TRACK_HEIGHT, x, MARKER_TRACK_HEIGHT - 14]}
+          stroke={Theme.c}
+        />
+      )
+    })
+  }, [tickMark])
+
+  const renderShortRulerLine = React.useMemo(() => {
+    const units = scale / (tickMark * 10)
+    const offsetUnits = (scrollTime * scale) % units
+    const count = (Settings.width - LEFT_GUTTER + offsetUnits) / units
+    return Array.from({ length: count }, (v, i) => i).map(idx => {
+      const x = idx * units + LEFT_GUTTER - offsetUnits
+      return (
+        <Line
+          points={[x, MARKER_TRACK_HEIGHT, x, MARKER_TRACK_HEIGHT - 10]}
+          stroke={Theme.c}
+        />
+      )
+    })
+  }, [tickMark])
 
   return (
     <div style={{
-      width: Settings.width * dpr,
-      height: (Settings.height - TIME_SCROLLER_HEIGHT) * dpr,
+      width: Settings.width,
+      height: (Settings.height - TIME_SCROLLER_HEIGHT),
     }}>
       <Stage
         onMouseMove={setCurrentTime}
         onMouseUp={setCurrentTime}
-        width={Settings.width * dpr}
-        height={(Settings.height - TIME_SCROLLER_HEIGHT) * dpr}
+        width={Settings.width}
+        height={(Settings.height - TIME_SCROLLER_HEIGHT)}
         fill={Theme.a}
       >
         <Layer
@@ -148,9 +192,17 @@ const Panel = ({ classes }: IProps) => {
           y={2}
           width={Settings.width}
           height={scrollHeight}>
-          {renderLayerLine()}
-          {renderFrames()}
-          {renderPoints()}
+            {renderRuler}
+            {renderLongRulerLine}
+            {renderShortRulerLine}
+            <Group
+              x={0}
+              y={Settings.LINE_HEIGHT}
+            >
+              {renderLayerLine}
+              {renderFrames}
+              {renderPoints}
+            </Group>
         </Layer>
       </Stage>
 
@@ -160,16 +212,12 @@ const Panel = ({ classes }: IProps) => {
 }
 
 export default injectStyle({
-  container: {
-
-  },
   progressScroller: {
     position: 'absolute',
     top: '0px',
     left: '10px',
   },
   panelCanvas: {
-    position: 'absolute',
     top: TIME_SCROLLER_HEIGHT + 'px',
     left: '0px',
   }

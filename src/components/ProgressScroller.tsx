@@ -14,10 +14,10 @@ interface IProps {
 }
 
 let draggingOffset = null
+const MARGIN = 2
 
 const ProgressScroller = (props: IProps) => {
-  const MARGIN = 15
-  const { width, height } = props
+  const { width } = props
   const dispatch = useDispatch()
   const { totalTime, scale, scrollTime } = useMappedState(ctrState)
   const [scrollLeft, setScrollLeft] = React.useState(0)
@@ -34,10 +34,12 @@ const ProgressScroller = (props: IProps) => {
     }
     dragWrapper(scroller.current, /** mousedown*/() => {
       draggingOffset = scrollLeft
+      console.log('adha', draggingOffset)
     }, /** mousemove */ (e: any) => {
       if (draggingOffset !== null) {
         if (gripLen + scrollLeft <= w) {
           const left = Math.max(0, (draggingOffset + e.dx) / w * totalTime)
+          console.log('left', left, draggingOffset, e.dx)
           dispatch({
             type: CtrCons.SCROLL_TIME_SET,
             payload: left,
@@ -54,13 +56,16 @@ const ProgressScroller = (props: IProps) => {
   }, [width])
 
   React.useEffect(() => {
+    console.log('scroll', scrollTime)
     const totalTimePixels = totalTime * scale
     const k = w / totalTimePixels
     const len = w * k
     const left = scrollTime / totalTime * w
+    console.log('akjsdhashd', left, w, len)
     if (left + len <= w) {
       setGripLen(len)
       setScrollLeft(left)
+      console.log('leftleft', left)
     } else {
       setGripLen(len)
       setScrollLeft(w - len)
@@ -70,7 +75,7 @@ const ProgressScroller = (props: IProps) => {
   return (
     <Stage
       width={width}
-      height={height}
+      height={20}
     >
       <Layer>
         <Rect
@@ -78,14 +83,14 @@ const ProgressScroller = (props: IProps) => {
           y={0}
           stroke={Theme.b}
           width={width}
-          height={height}
+          height={20}
         />
         <Rect
           ref={scroller}
-          x={scrollLeft}
-          y={0}
+          x={scrollLeft + MARGIN}
+          y={MARGIN}
           width={gripLen}
-          height={16}
+          height={20 - 2 * MARGIN}
           fill={Theme.b}
           stroke={Theme.c}
         />

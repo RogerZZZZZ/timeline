@@ -124,33 +124,21 @@ const Timeline = ({ classes, data }: IProps) => {
 }
 
 export default injectStyle({
-  container: {
-    position: 'absolute',
-    top: '22px',
-  },
   headerStyles: {
-    position: 'absolute',
-    top: '0px',
     width: '100%',
     height: '22px',
     lineHeight: '22px',
     overflow: 'hidden'
   },
   pane: {
-    position: 'fixed',
-    top: '20px',
-    left: '20px',
     margin: 0,
-    border: '1px solid ' + Theme.a,
     padding: 0,
-    backgroundColor: Theme.a,
     color: Theme.d,
     zIndex: 999,
     fontFamily: 'monospace',
     fontSize: '12px'
   },
   paneTitle: {
-    borderBottom: '1px solid ' + Theme.b,
     textAlign: 'center',
   },
   topRightBar: {
