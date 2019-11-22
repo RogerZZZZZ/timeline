@@ -14,17 +14,18 @@ interface IProps {
 const ActionBar = ({ classes }: IProps) => {
   const dispatch = useDispatch()
   const { timelineStatus, maxEnd } = useMappedState(ctrState)
-  const defaultScale = 9
+  const defaultScale = 25
 
   React.useEffect(() => {
     scaleChange(defaultScale)
   }, [])
 
   const scaleChange = (value: any) => {
-    const timeScale = 60 * (10 / maxEnd)
+    const timeScale = 30 / maxEnd
+    console.log('scale', value * timeScale)
     dispatch({
       type: CtrCons.SCALE_SET,
-      payload: value * timeScale / 10
+      payload: value * timeScale
     })
   }
 
@@ -65,9 +66,9 @@ const ActionBar = ({ classes }: IProps) => {
         <Slider
           className={classes.rangeInput}
           defaultValue={defaultScale}
-          max={15}
-          min={3}
-          step={1}
+          max={40}
+          min={10}
+          step={5}
           onChange={(value: SliderValue) => scaleChange(value)}/>
       </div>
     </div>

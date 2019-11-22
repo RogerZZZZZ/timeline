@@ -63,12 +63,7 @@ export const formatTimeRuler = (s: number, type?: string) => {
 	let str = mins + ':' + secs_str
 
 	if (s % 1 > 0) {
-		const t2 = (s % 1) * 60
-		if (type === 'frames') {
-      str = secs + '+' + t2.toFixed(0) + 'f'
-    } else {
-      str += ((s % 1).toFixed(2)).substring(1)
-    }
+    str += ((s % 1).toFixed(2)).substring(1)
 	}
 	return str
 }

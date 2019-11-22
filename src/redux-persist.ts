@@ -13,7 +13,7 @@ const logEpicMiddleware = createEpicMiddleware<CtrActions, CtrActions, RootState
 const persistConfig = {
   key: 'root',
   storage,
-  blacklist: ['auth', 'anime'],
+  blacklist: ['auth'],
 }
 
 const configStore = (initState?: RootState) => {

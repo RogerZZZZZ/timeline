@@ -19,14 +19,7 @@ const Timeline = ({ classes, data }: IProps) => {
   const dispatch = useDispatch()
   let isPlaying = false
   let startPlay: any = null
-  const { maxEnd, currentTime, timelineStatus } = useMappedState(ctrState)
-
-  React.useEffect(() => {
-    dispatch({
-      type: CtrCons.DATA_INIT,
-      payload: defaultState,
-    })
-  }, [])
+  const { maxEnd, currentTime, timelineStatus, scale } = useMappedState(ctrState)
 
   React.useEffect(() => {
     if (timelineStatus === TIMELINE_STATUS.PLAYING) {

@@ -19,25 +19,26 @@ const MARGIN = 2
 const ProgressScroller = (props: IProps) => {
   const { width } = props
   const dispatch = useDispatch()
-  const { totalTime, scale, scrollTime } = useMappedState(ctrState)
+  const { totalTime, scale, scrollTime, maxEnd } = useMappedState(ctrState)
   const [scrollLeft, setScrollLeft] = React.useState(0)
   const [gripLen, setGripLen] = React.useState(0)
   const [w, setW] = React.useState(width - 2 * MARGIN)
   const scroller = React.useRef(null)
 
   React.useEffect(() => {
+    console.log('inininini')
     scroller.current.getBoundingClientRect = () => {
       return {
         left: scroller.current.attrs.x,
         right: scroller.current.attrs.y,
       }
     }
-    dragWrapper(scroller.current, /** mousedown*/() => {
+    dragWrapper(scroller.current, /** mousedown*/(e) => {
       draggingOffset = scrollLeft
       console.log('adha', draggingOffset)
     }, /** mousemove */ (e: any) => {
       if (draggingOffset !== null) {
-        if (gripLen + scrollLeft <= w) {
+        if (gripLen + draggingOffset <= w) {
           const left = Math.max(0, (draggingOffset + e.dx) / w * totalTime)
           console.log('left', left, draggingOffset, e.dx)
           dispatch({
@@ -56,21 +57,19 @@ const ProgressScroller = (props: IProps) => {
   }, [width])
 
   React.useEffect(() => {
-    console.log('scroll', scrollTime)
-    const totalTimePixels = totalTime * scale
+    const totalTimePixels = maxEnd * scale
     const k = w / totalTimePixels
     const len = w * k
-    const left = scrollTime / totalTime * w
+    const left = scrollTime / maxEnd * w
     console.log('akjsdhashd', left, w, len)
+    setGripLen(len)
     if (left + len <= w) {
-      setGripLen(len)
       setScrollLeft(left)
-      console.log('leftleft', left)
+      console.log('leftleft', left, scrollLeft)
     } else {
-      setGripLen(len)
       setScrollLeft(w - len)
     }
-  }, [scrollTime, scale, w, totalTime])
+  }, [scrollTime, scale, w, maxEnd])
 
   return (
     <Stage

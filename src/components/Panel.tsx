@@ -20,6 +20,7 @@ interface IProps {
 const TIME_SCROLLER_HEIGHT = 35
 const LEFT_GUTTER = 20
 const MARKER_TRACK_HEIGHT = 25
+const DEFAULT_OFFSET = 2
 
 const Panel = ({ classes }: IProps) => {
   const dispatch = useDispatch()
@@ -30,6 +31,7 @@ const Panel = ({ classes }: IProps) => {
   let scrollHeight = Settings.height - TIME_SCROLLER_HEIGHT
 
   React.useEffect(() => {
+    console.log('00000000----', scale)
     setTickMark(scale / 60)
   }, [scale])
 
@@ -85,7 +87,7 @@ const Panel = ({ classes }: IProps) => {
 
   const renderLayerLine = React.useMemo(() => {
     return Array.from({ length: layers.length + 1 }).map((_val: any, idx: number) => {
-      const y = ~~(idx * Settings.LINE_HEIGHT) - 0.5
+      const y = ~~(idx * Settings.LINE_HEIGHT) - 0.5 + Settings.LINE_HEIGHT
       return (
         <Line
           points={[0, y, Settings.width, y]}
@@ -122,50 +124,30 @@ const Panel = ({ classes }: IProps) => {
 
   const renderRuler = React.useMemo(() => {
     const units = scale / tickMark
-    const offsetUnits = (scrollTime * scale) % units
-    const count = (Settings.width - LEFT_GUTTER + offsetUnits) / units
-    return Array.from({ length: count }, (v, i) => i).map(idx => {
-      const x = idx * units + LEFT_GUTTER - offsetUnits
-      return (
-        <Group>
+    const count = (Settings.width - LEFT_GUTTER) * 10 / units
+    return Array.from({length: count}, (v, i) => i).map(idx => {
+      if (idx % 10 === 0) {
+        const tIdx = idx / 10
+        const x = tIdx * units + LEFT_GUTTER
+          return (
+            <Line
+              points={[x, 0, x, Settings.height]}
+              stroke={Theme.c}
+            />
+          )
+      }
+
+      if (idx % 5 === 0) {
+        const tIdx = idx / 5
+        const x = tIdx * units / 2 + LEFT_GUTTER
+        return (
           <Line
-            points={[x, 0, x, Settings.height]}
+            points={[x, MARKER_TRACK_HEIGHT, x, MARKER_TRACK_HEIGHT - 14]}
             stroke={Theme.c}
           />
-          <Text
-            x={x}
-            y={0}
-            text={formatTimeRuler(
-              (idx * units - offsetUnits) / scale + scrollTime
-            )}
-            align="center"
-          />
-        </Group>
-      )
-    })
-  }, [tickMark])
-
-  const renderLongRulerLine = React.useMemo(() => {
-    const units = scale / (tickMark * 2)
-    const offsetUnits = (scrollTime * scale) % units
-    const count = (Settings.width - LEFT_GUTTER + offsetUnits) / units
-    return Array.from({ length: count }, (v, i) => i).map(idx => {
-      const x = idx * units + LEFT_GUTTER - offsetUnits
-      return (
-        <Line
-          points={[x, MARKER_TRACK_HEIGHT, x, MARKER_TRACK_HEIGHT - 14]}
-          stroke={Theme.c}
-        />
-      )
-    })
-  }, [tickMark])
-
-  const renderShortRulerLine = React.useMemo(() => {
-    const units = scale / (tickMark * 10)
-    const offsetUnits = (scrollTime * scale) % units
-    const count = (Settings.width - LEFT_GUTTER + offsetUnits) / units
-    return Array.from({ length: count }, (v, i) => i).map(idx => {
-      const x = idx * units + LEFT_GUTTER - offsetUnits
+        )
+      }
+      const x = idx * units / 10 + LEFT_GUTTER
       return (
         <Line
           points={[x, MARKER_TRACK_HEIGHT, x, MARKER_TRACK_HEIGHT - 10]}
@@ -174,6 +156,25 @@ const Panel = ({ classes }: IProps) => {
       )
     })
   }, [tickMark])
+
+  const renderRulerText = React.useMemo(() => {
+    const units = scale / tickMark
+    const count = (Settings.width - LEFT_GUTTER) / units
+    return Array.from({length: count}, (v, i) => i).map(idx => {
+      const x = idx * units + LEFT_GUTTER
+      return (
+        <Text
+          x={x}
+          y={0}
+          text={formatTimeRuler(
+            (idx * units) / scale + scrollTime
+          )}
+          align="center"
+        />
+      )
+    })
+
+  }, [scrollTime, tickMark])
 
   return (
     <div style={{
@@ -193,13 +194,12 @@ const Panel = ({ classes }: IProps) => {
           width={Settings.width}
           height={scrollHeight}>
             {renderRuler}
-            {renderLongRulerLine}
-            {renderShortRulerLine}
+            {renderRulerText}
+            {renderLayerLine}
             <Group
-              x={0}
+              x={-(scrollTime * scale)}
               y={Settings.LINE_HEIGHT}
-            >
-              {renderLayerLine}
+              >
               {renderFrames}
               {renderPoints}
             </Group>
